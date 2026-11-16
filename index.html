@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Governed publish flow</title>
+<style>
+
+:root{--bg:#fafafa;--ink:#1d1d1d;--mut:#5a5a5a;--line:#c9c9c9;--panel:#fff;--blue:#1473e6;--org:#d7650f;--grn:#12805c;--red:#d31510;--vio:#7c4dff}
+@media(prefers-color-scheme:dark){:root{--bg:#1b1b1b;--ink:#f1f1f1;--mut:#b5b5b5;--line:#444;--panel:#262626;--blue:#6aa8ff;--org:#ff9a45;--grn:#4fd1a1;--red:#ff6b64;--vio:#b49cff}}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Adobe Clean","Source Sans Pro",-apple-system,Segoe UI,Helvetica,Arial,sans-serif;line-height:1.5}
+header{padding:20px 24px 8px}
+h1{margin:0 0 4px;font-size:26px}
+h2{font-size:19px;margin:28px 0 8px}
+.sub{color:var(--mut);margin:0;max-width:900px}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:10px 24px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bar button{font:inherit;font-size:14px;padding:6px 14px;border-radius:18px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.bar button[aria-pressed=true]{background:var(--blue);color:#fff;border-color:var(--blue)}
+.bar .sp{flex:1}
+.note{padding:10px 24px;color:var(--ink);font-size:15px;min-height:46px}
+.scroll{overflow:auto;border-top:1px solid var(--line);border-bottom:1px solid var(--line);height:calc(100vh - 190px);min-height:520px;background:var(--bg);cursor:grab}
+#wrap{transform-origin:0 0}
+.legend{display:flex;flex-wrap:wrap;gap:16px;padding:10px 24px;font-size:13px;color:var(--mut)}
+.legend i{display:inline-block;width:22px;height:0;border-top:3px solid;vertical-align:middle;margin-right:6px}
+main{padding:0 24px 60px;max-width:1200px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--panel)}
+.pill{display:inline-block;font-size:11px;font-weight:700;color:#fff;border-radius:9px;padding:1px 8px}
+.pill.b{background:var(--red)}.pill.p{background:#b7791f}.pill.x{background:var(--grn)}
+
+.bg{fill:var(--bg)}
+.lane{fill:transparent;stroke:var(--line);stroke-width:1}
+.lane-ew{fill:rgba(20,115,230,.06)}.lane-chk{fill:rgba(124,77,255,.06)}.lane-nat{fill:rgba(20,115,230,.03)}
+.lane-wf{fill:rgba(215,101,15,.08)}.lane-pub{fill:rgba(18,128,92,.07)}.lane-rec{fill:rgba(128,128,128,.07)}
+.lanelabel{font-size:15px;font-weight:700;fill:var(--ink)}.lanelabel.sub{font-weight:400;fill:var(--mut);font-size:13px}
+.lanesep{stroke:var(--line)}
+.colhead{font-size:15px;font-weight:700;fill:var(--mut);letter-spacing:.04em;text-transform:uppercase}
+.box{fill:var(--panel);stroke:var(--line);stroke-width:1.5}
+.box-ew,.dia{stroke:var(--blue)}.box-chk{stroke:var(--vio)}.box-nat{stroke:var(--blue)}.box-wf{stroke:var(--org);stroke-width:2}.box-pub{stroke:var(--grn)}
+.dia{fill:var(--panel);stroke-width:2}
+.nt{font-size:15px;font-weight:700;fill:var(--ink)}.nb{font-size:13.5px;fill:var(--mut)}
+.edge{fill:none;stroke:var(--ink);stroke-width:2}
+.edge.nat{stroke:var(--blue)}.edge.wf{stroke:var(--org)}.edge.t1{stroke:var(--grn)}.edge.em{stroke:var(--red);stroke-dasharray:7 5}.edge.warn{stroke:var(--red)}.edge.rec{stroke:var(--mut);stroke-dasharray:3 4}
+.elabel{font-size:13px;font-weight:600;fill:var(--ink);stroke:none}.elabel.nat{fill:var(--blue)}.elabel.wf{fill:var(--org)}.elabel.t1{fill:var(--grn)}.elabel.em,.elabel.warn{fill:var(--red)}
+.chip rect{fill:var(--mut)}.chip text{font-size:10px;font-weight:700;fill:#fff;letter-spacing:.05em}
+.chip-BUILD rect{fill:var(--red)}.chip-PARTIAL rect{fill:#b7791f}.chip-EXISTS rect{fill:var(--grn)}
+.el{transition:opacity .2s}
+.dim .el.off{opacity:.16}
+
+</style></head><body>
+<header><h1>Governed publish flow: standard approvals first, Workfront for advanced needs</h1>
+<p class="sub">One Release pipeline in Experience Workspace. The governance profile picks the path. Approvals stay in Experience Workspace by default; a route moves to Workfront only when requirements exceed what standard approvals support. Pick a scenario to light up its path. Drag to pan; use the zoom buttons.</p><p class="sub" style="margin-top:6px"><b>Draft concept for discussion.</b> Not a product commitment. Native limits and Workfront integration details are proposals and need validation with engineering.</p></header>
+<div class="bar" role="toolbar" aria-label="Diagram controls">
+<button id="s-all" aria-pressed="true">All paths</button>
+<button id="s-g" aria-pressed="false">Global brand (Tier 1/2)</button>
+<button id="s-l" aria-pressed="false">Legal-locked (Tier 3, standard)</button>
+<button id="s-w" aria-pressed="false">Advanced approvals (Workfront)</button>
+<button id="s-e" aria-pressed="false">Emergency</button>
+<span class="sp"></span>
+<button id="zo" aria-label="Zoom out">&minus;</button><button id="zi" aria-label="Zoom in">+</button><button id="zf">Fit width</button><button id="z1">100%</button>
+</div>
+<div class="note" id="note"></div>
+<div class="scroll" id="sc"><div id="wrap"><svg id="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2900 1420" width="2900" height="1420" font-family="'Adobe Clean','Source Sans Pro',-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<defs>
+<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker></defs>
+<rect x="0" y="0" width="2900" height="1420" class="bg"/>
+<rect x="0" y="50" width="2900" height="160" class="lane lane-author"/>
+<text x="16" y="124.0" class="lanelabel">Author</text>
+<rect x="0" y="210" width="2900" height="290" class="lane lane-ew"/>
+<text x="16" y="341.0" class="lanelabel">EW control plane</text>
+<text x="16" y="361.0" class="lanelabel sub">(Release panel + policy)</text>
+<rect x="0" y="500" width="2900" height="150" class="lane lane-chk"/>
+<text x="16" y="561.0" class="lanelabel">Automated checks</text>
+<text x="16" y="581.0" class="lanelabel sub">(Governance Agent)</text>
+<rect x="0" y="650" width="2900" height="150" class="lane lane-nat"/>
+<text x="16" y="711.0" class="lanelabel">Standard approvals</text>
+<text x="16" y="731.0" class="lanelabel sub">(EW Request Publish)</text>
+<rect x="0" y="800" width="2900" height="200" class="lane lane-wf"/>
+<text x="16" y="886.0" class="lanelabel">Advanced approvals</text>
+<text x="16" y="906.0" class="lanelabel sub">(Workfront)</text>
+<rect x="0" y="1000" width="2900" height="240" class="lane lane-pub"/>
+<text x="16" y="1106.0" class="lanelabel">Publish · Localize · Roll out</text>
+<text x="16" y="1126.0" class="lanelabel sub">(EDS · Translation · MSM)</text>
+<rect x="0" y="1240" width="2900" height="150" class="lane lane-rec"/>
+<text x="16" y="1309.0" class="lanelabel">Record &amp; audit</text>
+<line x1="196" y1="50" x2="196" y2="1390" class="lanesep"/>
+<text x="330" y="32" text-anchor="middle" class="colhead">Start</text>
+<text x="620" y="32" text-anchor="middle" class="colhead">Scope</text>
+<text x="910" y="32" text-anchor="middle" class="colhead">Checks</text>
+<text x="1200" y="32" text-anchor="middle" class="colhead">Route</text>
+<text x="1490" y="32" text-anchor="middle" class="colhead">Review</text>
+<text x="1780" y="32" text-anchor="middle" class="colhead">Gate + Release</text>
+<text x="2070" y="32" text-anchor="middle" class="colhead">Localize</text>
+<text x="2360" y="32" text-anchor="middle" class="colhead">Roll out</text>
+<g class="el" data-t="g l w e"><polyline points="455,130 620,130 620,292" class="edge main" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="g l w e"><polyline points="620,408 620,575 785,575" class="edge main" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="g l w e"><polyline points="950,516 950,350 1065,350" class="edge main" marker-end="url(#ar)"/>
+<text x="958" y="455" text-anchor="start" class="elabel main">pass / warn</text>
+</g>
+<g class="el" data-t="g l w e"><polyline points="870,516 870,180" class="edge warn" marker-end="url(#ar)"/>
+<text x="878" y="300" text-anchor="start" class="elabel warn">block: fix</text>
+</g>
+<g class="el" data-t="g"><polyline points="1200,425 1200,525" class="edge t1" marker-end="url(#ar)"/>
+<text x="1208" y="447" text-anchor="start" class="elabel t1">Tier 1</text>
+</g>
+<g class="el" data-t="g l"><polyline points="1335,350 1350,350 1350,725 1365,725" class="edge nat" marker-end="url(#ar)"/>
+<text x="1342" y="705" text-anchor="end" class="elabel nat">T2 / T3: request</text>
+</g>
+<g class="el" data-t="w"><polyline points="1350,740 1350,905 1365,905" class="edge wf" marker-end="url(#ar)"/>
+<text x="1342" y="885" text-anchor="end" class="elabel wf">Advanced: request</text>
+</g>
+<g class="el" data-t="e"><polyline points="1200,275 1200,188" class="edge em" marker-end="url(#ar)"/>
+<text x="1208" y="262" text-anchor="start" class="elabel em">Emergency</text>
+</g>
+<g class="el" data-t="g l"><polyline points="1615,725 1780,725" class="edge nat" marker-end="url(#ar)"/>
+<text x="1645.0" y="717" text-anchor="start" class="elabel nat">decision</text>
+</g>
+<g class="el" data-t="g"><polyline points="1325,575 1780,575" class="edge t1" marker-end="url(#ar)"/>
+<text x="1385.0" y="567" text-anchor="start" class="elabel t1">auto decision</text>
+</g>
+<g class="el" data-t="w"><polyline points="1615,905 1655,905" class="edge wf" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="w"><polyline points="1780,855 1780,425" class="edge wf" marker-end="url(#ar)"/>
+<text x="1788" y="640" text-anchor="start" class="elabel wf">decision(version)</text>
+</g>
+<g class="el" data-t="g l w"><polyline points="1780,275 1780,188" class="edge warn" marker-end="url(#ar)"/>
+<text x="1788" y="235" text-anchor="start" class="elabel warn">No: edited or rejected</text>
+</g>
+<g class="el" data-t="g l w"><polyline points="1915,350 2070,350 2070,1056" class="edge main" marker-end="url(#ar)"/>
+<text x="1940" y="340" text-anchor="start" class="elabel main">Yes</text>
+</g>
+<g class="el" data-t="e"><polyline points="1325,130 1345,130 1345,198 2150,198 2150,1056" class="edge em" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="g l w e"><polyline points="2195,1115 2225,1115" class="edge main" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="g l w e"><polyline points="2495,1115 2525,1115" class="edge main" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="g l w e"><polyline points="2070,1174 2070,1273" class="edge rec" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="g l w e"><polyline points="2360,1182 2360,1273" class="edge rec" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="g l w e"><polyline points="2650,1174 2650,1273" class="edge rec" marker-end="url(#ar)"/>
+</g>
+<g class="el node" data-t="g l w e" id="n-a1">
+<rect x="205" y="72" width="250" height="117" rx="10" class="box box-author"/>
+<text x="217" y="98" class="nt">Author clicks Publish</text>
+<text x="217" y="118" class="nb">Same panel from the editor</text>
+<text x="217" y="134" class="nb">Send button, the file-list</text>
+<text x="217" y="152" class="nb">bulk bar (page or folder</text>
+<text x="217" y="168" class="nb">selection) and the Assistant.</text>
+<g class="chip chip-PARTIAL"><rect x="385" y="62" width="62" height="18" rx="9"/><text x="416" y="76" text-anchor="middle">PARTIAL</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-a2">
+<rect x="785" y="80" width="250" height="100" rx="10" class="box box-author"/>
+<text x="797" y="106" class="nt">Fix flagged items</text>
+<text x="797" y="126" class="nb">Blocking checks return the</text>
+<text x="797" y="143" class="nb">author to the page with inline</text>
+<text x="797" y="160" class="nb">suggestions, then re-run.</text>
+<g class="chip chip-PARTIAL"><rect x="965" y="71" width="62" height="18" rx="9"/><text x="996" y="84" text-anchor="middle">PARTIAL</text></g>
+</g>
+<g class="el node" data-t="e" id="n-em1">
+<rect x="1075" y="72" width="250" height="117" rx="10" class="box box-author"/>
+<text x="1087" y="98" class="nt">Emergency (break-glass)</text>
+<text x="1087" y="118" class="nb">Named publishers only. Skips</text>
+<text x="1087" y="134" class="nb">review; review required</text>
+<text x="1087" y="152" class="nb">afterwards within N hours</text>
+<text x="1087" y="168" class="nb">(native or Workfront).</text>
+<g class="chip chip-BUILD"><rect x="1255" y="62" width="62" height="18" rx="9"/><text x="1286" y="76" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="g l w" id="n-a5">
+<rect x="1655" y="72" width="250" height="117" rx="10" class="box box-author"/>
+<text x="1667" y="98" class="nt">Author revises</text>
+<text x="1667" y="118" class="nb">Changes requested, or page</text>
+<text x="1667" y="134" class="nb">edited after approval.</text>
+<text x="1667" y="152" class="nb">Approval is void; restarts at</text>
+<text x="1667" y="168" class="nb">Checks.</text>
+<g class="chip chip-BUILD"><rect x="1835" y="62" width="62" height="18" rx="9"/><text x="1866" y="76" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-e1">
+<rect x="495" y="292" width="250" height="117" rx="10" class="box box-ew"/>
+<text x="507" y="318" class="nt">0 Scope</text>
+<text x="507" y="338" class="nb">Page or bulk. Split by</text>
+<text x="507" y="354" class="nb">governance zone. Add the</text>
+<text x="507" y="372" class="nb">fragments and assets the pages</text>
+<text x="507" y="388" class="nb">depend on.</text>
+<g class="chip chip-BUILD"><rect x="675" y="282" width="62" height="18" rx="9"/><text x="706" y="296" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-route">
+<polygon points="1200,275.0 1335.0,350 1200,425.0 1065.0,350" class="box dia"/>
+<g class="chip chip-BUILD"><rect x="1169" y="266.0" width="62" height="18" rx="9"/><text x="1200" y="279.0" text-anchor="middle">BUILD</text></g>
+<text x="1200" y="320" text-anchor="middle" class="nt">2 Route</text>
+<text x="1200" y="339" text-anchor="middle" class="nb">Zone + tier + check</text>
+<text x="1200" y="355" text-anchor="middle" class="nb">results choose the</text>
+<text x="1200" y="371" text-anchor="middle" class="nb">approval provider</text>
+</g>
+<g class="el node" data-t="g l w" id="n-e4">
+<rect x="1370" y="273" width="240" height="134" rx="10" class="box box-ew"/>
+<text x="1382" y="299" class="nt">Provider contract</text>
+<text x="1382" y="319" class="nb">request(version, preview URL,</text>
+<text x="1382" y="336" class="nb">policy) out;</text>
+<text x="1382" y="353" class="nb">decision(version, who, when)</text>
+<text x="1382" y="370" class="nb">back; withdraw if the page</text>
+<text x="1382" y="387" class="nb">changes.</text>
+<g class="chip chip-BUILD"><rect x="1540" y="264" width="62" height="18" rx="9"/><text x="1571" y="277" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="g l w" id="n-gate">
+<polygon points="1780,275.0 1915.0,350 1780,425.0 1645.0,350" class="box dia"/>
+<g class="chip chip-BUILD"><rect x="1749" y="266.0" width="62" height="18" rx="9"/><text x="1780" y="279.0" text-anchor="middle">BUILD</text></g>
+<text x="1780" y="328" text-anchor="middle" class="nt">Gate</text>
+<text x="1780" y="347" text-anchor="middle" class="nb">Approved for this exact</text>
+<text x="1780" y="363" text-anchor="middle" class="nb">version?</text>
+</g>
+<g class="el node" data-t="g l w e" id="n-e5">
+<rect x="205" y="362" width="250" height="117" rx="10" class="box box-ew"/>
+<text x="217" y="388" class="nt">Status rail</text>
+<text x="217" y="408" class="nb">Checks › Review › Release ›</text>
+<text x="217" y="424" class="nb">Locales › Rollout, same view</text>
+<text x="217" y="442" class="nb">for author, approver and</text>
+<text x="217" y="458" class="nb">admin.</text>
+<g class="chip chip-BUILD"><rect x="385" y="352" width="62" height="18" rx="9"/><text x="416" y="366" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-k1">
+<rect x="785" y="516" width="250" height="117" rx="10" class="box box-chk"/>
+<text x="797" y="542" class="nt">1 Automated checks</text>
+<text x="797" y="562" class="nb">Brand (Experience Context),</text>
+<text x="797" y="580" class="nb">visibility (ABV), links and</text>
+<text x="797" y="596" class="nb">accessibility. Each is block,</text>
+<text x="797" y="614" class="nb">warn or info. Gate bulk too.</text>
+<g class="chip chip-PARTIAL"><rect x="965" y="508" width="62" height="18" rx="9"/><text x="996" y="520" text-anchor="middle">PARTIAL</text></g>
+</g>
+<g class="el node" data-t="g" id="n-n0">
+<rect x="1075" y="525" width="250" height="100" rx="10" class="box box-chk"/>
+<text x="1087" y="551" class="nt">Tier 1: auto-approve</text>
+<text x="1087" y="571" class="nb">All blocking checks passed in</text>
+<text x="1087" y="588" class="nb">a low-risk zone. No human</text>
+<text x="1087" y="605" class="nb">step; decision recorded.</text>
+<g class="chip chip-BUILD"><rect x="1255" y="516" width="62" height="18" rx="9"/><text x="1286" y="529" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="g l" id="n-n1">
+<rect x="1365" y="666" width="250" height="117" rx="10" class="box box-nat"/>
+<text x="1377" y="692" class="nt">Standard review (T2, T3)</text>
+<text x="1377" y="712" class="nb">Up to 3 stages; parallel</text>
+<text x="1377" y="730" class="nb">groups (all-of / any-of);</text>
+<text x="1377" y="746" class="nb">diff, comments, reminders;</text>
+<text x="1377" y="764" class="nb">four-eyes.</text>
+<g class="chip chip-PARTIAL"><rect x="1545" y="658" width="62" height="18" rx="9"/><text x="1576" y="670" text-anchor="middle">PARTIAL</text></g>
+</g>
+<g class="el node" data-t="w" id="n-w1">
+<rect x="1365" y="837" width="250" height="136" rx="10" class="box box-wf"/>
+<text x="1377" y="863" class="nt">Advanced approvals</text>
+<text x="1377" y="882" class="nt">(Workfront)</text>
+<text x="1377" y="902" class="nb">Past standard limits:</text>
+<text x="1377" y="919" class="nb">conditional routing, SLA and</text>
+<text x="1377" y="936" class="nb">escalation, external</text>
+<text x="1377" y="953" class="nb">reviewers, project tracking.</text>
+<g class="chip chip-BUILD"><rect x="1545" y="828" width="62" height="18" rx="9"/><text x="1576" y="841" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="w" id="n-w2">
+<rect x="1655" y="855" width="250" height="100" rx="10" class="box box-wf"/>
+<text x="1667" y="881" class="nt">Decision returns</text>
+<text x="1667" y="901" class="nb">Event subscription or Fusion</text>
+<text x="1667" y="918" class="nb">webhook sends stage and final</text>
+<text x="1667" y="935" class="nb">decisions back to EW.</text>
+<g class="chip chip-BUILD"><rect x="1835" y="846" width="62" height="18" rx="9"/><text x="1866" y="859" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-p1">
+<rect x="1945" y="1056" width="250" height="117" rx="10" class="box box-pub"/>
+<text x="1957" y="1082" class="nt">4 Release</text>
+<text x="1957" y="1102" class="nb">Publish now or scheduled.</text>
+<text x="1957" y="1120" class="nb">Bulk: atomic or partial.</text>
+<text x="1957" y="1136" class="nb">Publishes on EDS only after</text>
+<text x="1957" y="1154" class="nb">the gate opens.</text>
+<g class="chip chip-PARTIAL"><rect x="2125" y="1048" width="62" height="18" rx="9"/><text x="2156" y="1060" text-anchor="middle">PARTIAL</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-t1">
+<rect x="2225" y="1048" width="270" height="134" rx="10" class="box box-pub"/>
+<text x="2237" y="1074" class="nt">5 Localize</text>
+<text x="2237" y="1094" class="nb">Per-locale variants, each with</text>
+<text x="2237" y="1111" class="nb">its own gates. T1/T2: inherit</text>
+<text x="2237" y="1128" class="nb">approval + sampled QA. T3: in-</text>
+<text x="2237" y="1145" class="nb">country review per locale (native</text>
+<text x="2237" y="1162" class="nb">or Workfront stage).</text>
+<g class="chip chip-PARTIAL"><rect x="2425" y="1039" width="62" height="18" rx="9"/><text x="2456" y="1052" text-anchor="middle">PARTIAL</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-m1">
+<rect x="2525" y="1056" width="250" height="117" rx="10" class="box box-pub"/>
+<text x="2537" y="1082" class="nt">6 Roll out (MSM)</text>
+<text x="2537" y="1102" class="nb">Satellites inherit or merge.</text>
+<text x="2537" y="1120" class="nb">Global fields locked, local</text>
+<text x="2537" y="1136" class="nb">fields open. Rollout re-check</text>
+<text x="2537" y="1154" class="nb">by tier.</text>
+<g class="chip chip-PARTIAL"><rect x="2705" y="1048" width="62" height="18" rx="9"/><text x="2736" y="1060" text-anchor="middle">PARTIAL</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-r1">
+<rect x="1910" y="1273" width="900" height="84" rx="10" class="box box-rec"/>
+<text x="1922" y="1299" class="nt">7 Record</text>
+<text x="1922" y="1319" class="nb">Publish record: who, what version, which provider decision, when. Expiry or archive, rollback.</text>
+<g class="chip chip-BUILD"><rect x="2740" y="1264" width="62" height="18" rx="9"/><text x="2771" y="1277" text-anchor="middle">BUILD</text></g>
+</g>
+</svg></div></div>
+<div class="legend"><span><i style="border-color:var(--ink)"></i>main flow</span><span><i style="border-color:var(--blue)"></i>standard approvals</span><span><i style="border-color:var(--org)"></i>Workfront</span><span><i style="border-color:var(--grn)"></i>Tier 1 auto</span><span><i style="border-color:var(--red);border-top-style:dashed"></i>emergency / return to author</span>
+<span><span class="pill x">EXISTS</span> today</span><span><span class="pill p">PARTIAL</span> exists, gaps</span><span><span class="pill b">BUILD</span> engineering ask</span></div>
+<main>
+<h2>Standard approvals first, Workfront for advanced needs</h2>
+<p>Principle: do as much as possible in Experience Workspace out of the box. A route is moved to Workfront only when a requirement goes past what standard approvals include. Moving to Workfront changes who does the review work, not the gate, the status rail or the record.</p>
+<table><tr><th>Standard approvals include (proposed)</th><th>Advanced approvals in Workfront when the customer needs...</th></tr>
+<tr><td>Tier 1: auto-approve when blocking checks pass.</td><td>More than 3 stages, or a different number of stages depending on the content (conditional routing).</td></tr>
+<tr><td>Up to 3 sequential stages (Tier 2 is one; Tier 3 is two or three).</td><td>Deadlines with escalation, delegation or out-of-office handling, and reporting on turnaround time.</td></tr>
+<tr><td>Parallel groups inside a stage, with all-of or any-of (for example Legal and Brand together).</td><td>Agencies, external or non-IMS reviewers, or review that is part of a larger project, campaign or request intake.</td></tr>
+<tr><td>Approvers by Admin Console group or named person; watchers; comments; diff against live.</td><td>Markup on the rendered page (annotations), proof versions, or the customer already runs approvals in Workfront.</td></tr>
+<tr><td>Reminders by email; four-eyes; decision bound to the exact version; withdraw on edit.</td><td>An audit or compliance process that must live in the customer's work-management system of record.</td></tr></table>
+<p><b>Who owns what.</b> EW always owns the <b>gate</b>: it holds the version, checks that the decision is for that exact version, enforces four-eyes, publishes, and writes the record. The provider (native or Workfront) owns the <b>review work</b> and returns a decision. Workfront never publishes. <b>Using Workfront is a policy setting per tier or zone</b>, chosen in onboarding, not something an author decides per request. The author sees the same status rail either way.</p>
+<h2>Provider contract (what EW sends and receives)</h2>
+<table><tr><th>Direction</th><th>Content</th></tr>
+<tr><td>EW → provider</td><td>Release id, page list, <b>version id</b> per page, preview URL, zone and tier, author, note, timing, requested stage template.</td></tr>
+<tr><td>Provider → EW</td><td>Stage started, stage decision (approve or changes requested, with comment), final decision, all tied to the version id; reviewer identity.</td></tr>
+<tr><td>EW → provider</td><td>Withdraw (page edited, author cancelled) so the provider closes the work and a new request opens.</td></tr>
+<tr><td>Identity</td><td>EW sign-in (Adobe IMS) must map to the Workfront user so four-eyes ("author cannot approve") holds across systems.</td></tr></table>
+<h2>Advanced path: what research says about Workfront (and what is unverified)</h2>
+<table><tr><th>Finding</th><th>Status</th></tr>
+<tr><td>Workfront approvals support sequential stages and parallel paths (up to 30 paths and 100 stages per template), stage activation criteria, and automated proofing workflows.</td><td><span class="pill x">docs</span> Experience League</td></tr>
+<tr><td>Decision events can be pushed out through the Event Subscription API (Approval, Approval Stage, Approval Stage Participant) or Fusion webhooks. A community answer says there is no native Fusion trigger for the newer Unified Approvals decisions; a custom webhook or polling is suggested.</td><td><span class="pill p">docs + community</span> verify with Workfront</td></tr>
+<tr><td>The documented Workfront + AEM native integration covers <b>AEM Assets</b>, not Sites pages or Edge Delivery. No documented Workfront to EDS publish gate exists; a custom Fusion scenario or middleware is the likely path.</td><td><span class="pill p">community + event notes</span></td></tr>
+<tr><td>Workfront can proof a website from a URL (static screenshots or interactive), but the page must be reachable: static proofs cannot capture password-protected sites and time out after 60 s. EW preview or review URLs may be protected, so proof access needs a design.</td><td><span class="pill p">docs</span> risk for our flow</td></tr>
+<tr><td>The Workfront MCP server is in preview (sandbox, US/AWS only). A Workfront agent could create approval templates during onboarding, but not yet reliably.</td><td><span class="pill p">preview</span></td></tr></table>
+<h2>What this changes in the design basis</h2>
+<ul><li>Standard approvals are bounded, not zero: up to 3 stages, parallel groups (all-of / any-of), reminders, four-eyes and version binding are built into EW. Anything beyond that moves to Workfront.</li>
+<li>The <b>build ask has two layers</b>: (1) the gate and provider contract, which both paths need; (2) a bounded native stage engine, much smaller than a general workflow engine.</li>
+<li>Onboarding step 4 becomes "approvals": the agent asks questions, recommends standard or advanced (Workfront) per tier against the ceiling above, and for advanced connects Workfront, picks or creates the template, maps groups to Workfront teams, and runs a test round trip.</li>
+</ul>
+</main>
+<script>
+(function(){
+var sc=document.getElementById('sc'),wrap=document.getElementById('wrap'),svg=document.getElementById('dg'),z=0.62;
+var SW=+svg.getAttribute('width'),SH=+svg.getAttribute('height');
+function apply(){wrap.style.transform='scale('+z+')';wrap.style.width=SW+'px';wrap.style.height=SH+'px';wrap.style.marginRight=(SW*(z-1))+'px';wrap.style.marginBottom=(SH*(z-1))+'px';}
+function fit(){z=Math.max(.3,(sc.clientWidth-8)/SW);apply();}
+document.getElementById('zi').onclick=function(){z=Math.min(1.6,z*1.2);apply()};
+document.getElementById('zo').onclick=function(){z=Math.max(.25,z/1.2);apply()};
+document.getElementById('zf').onclick=fit;document.getElementById('z1').onclick=function(){z=1;apply()};
+apply();
+var notes={all:"All paths. Every request starts the same way; the route step sends it to auto-approve, native review, Workfront, or the emergency path.",
+g:"Global brand page (Tier 1/2): checks pass; low-risk zones auto-approve, others get one native approver. Publish, translate with sampled QA, and roll out to satellites. The author never leaves the Release panel.",
+l:"Legal-locked page (Tier 3, standard approvals): a warning is fixed first, then EW runs two stages natively (Legal and Brand together, then a final approver). The decision is bound to that exact version; if the page is edited, approval is void and the author revises. Each locale gets in-country review before it publishes.",
+w:"Advanced approvals (Workfront): when a customer needs more than standard approvals support (extra stages, conditional routing, SLAs and escalation, agencies as reviewers, project tracking), the same route sends the request to Workfront. The gate, status rail and record stay in EW.",
+e:"Emergency (break-glass): only named publishers; checks still run but do not block; review happens afterwards in the same provider. Everything is recorded."};
+function set(k){['all','g','l','w','e'].forEach(function(x){document.getElementById('s-'+x).setAttribute('aria-pressed',x===k)});
+document.getElementById('note').textContent=notes[k];
+svg.classList.toggle('dim',k!=='all');
+svg.querySelectorAll('.el').forEach(function(el){var t=(el.getAttribute('data-t')||'').split(' ');el.classList.toggle('off',k!=='all'&&t.indexOf(k)<0)});}
+['all','g','l','w','e'].forEach(function(k){document.getElementById('s-'+k).onclick=function(){set(k)}});set('all');
+var d=null;sc.addEventListener('mousedown',function(e){d={x:e.clientX,y:e.clientY,l:sc.scrollLeft,t:sc.scrollTop}});
+window.addEventListener('mouseup',function(){d=null});window.addEventListener('mousemove',function(e){if(d){sc.scrollLeft=d.l-(e.clientX-d.x);sc.scrollTop=d.t-(e.clientY-d.y)}});
+})();
+</script></body></html>

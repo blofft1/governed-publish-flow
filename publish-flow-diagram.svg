@@ -1,0 +1,262 @@
+<svg id="dg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2900 1420" width="2900" height="1420" font-family="'Adobe Clean','Source Sans Pro',-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+<style>
+:root{--bg:#fafafa;--ink:#1d1d1d;--mut:#5a5a5a;--line:#c9c9c9;--panel:#fff;--blue:#1473e6;--org:#d7650f;--grn:#12805c;--red:#d31510;--vio:#7c4dff}
+@media(prefers-color-scheme:dark){:root{--bg:#1b1b1b;--ink:#f1f1f1;--mut:#b5b5b5;--line:#444;--panel:#262626;--blue:#6aa8ff;--org:#ff9a45;--grn:#4fd1a1;--red:#ff6b64;--vio:#b49cff}}
+
+.bg{fill:var(--bg)}
+.lane{fill:transparent;stroke:var(--line);stroke-width:1}
+.lane-ew{fill:rgba(20,115,230,.06)}.lane-chk{fill:rgba(124,77,255,.06)}.lane-nat{fill:rgba(20,115,230,.03)}
+.lane-wf{fill:rgba(215,101,15,.08)}.lane-pub{fill:rgba(18,128,92,.07)}.lane-rec{fill:rgba(128,128,128,.07)}
+.lanelabel{font-size:15px;font-weight:700;fill:var(--ink)}.lanelabel.sub{font-weight:400;fill:var(--mut);font-size:13px}
+.lanesep{stroke:var(--line)}
+.colhead{font-size:15px;font-weight:700;fill:var(--mut);letter-spacing:.04em;text-transform:uppercase}
+.box{fill:var(--panel);stroke:var(--line);stroke-width:1.5}
+.box-ew,.dia{stroke:var(--blue)}.box-chk{stroke:var(--vio)}.box-nat{stroke:var(--blue)}.box-wf{stroke:var(--org);stroke-width:2}.box-pub{stroke:var(--grn)}
+.dia{fill:var(--panel);stroke-width:2}
+.nt{font-size:15px;font-weight:700;fill:var(--ink)}.nb{font-size:13.5px;fill:var(--mut)}
+.edge{fill:none;stroke:var(--ink);stroke-width:2}
+.edge.nat{stroke:var(--blue)}.edge.wf{stroke:var(--org)}.edge.t1{stroke:var(--grn)}.edge.em{stroke:var(--red);stroke-dasharray:7 5}.edge.warn{stroke:var(--red)}.edge.rec{stroke:var(--mut);stroke-dasharray:3 4}
+.elabel{font-size:13px;font-weight:600;fill:var(--ink);stroke:none}.elabel.nat{fill:var(--blue)}.elabel.wf{fill:var(--org)}.elabel.t1{fill:var(--grn)}.elabel.em,.elabel.warn{fill:var(--red)}
+.chip rect{fill:var(--mut)}.chip text{font-size:10px;font-weight:700;fill:#fff;letter-spacing:.05em}
+.chip-BUILD rect{fill:var(--red)}.chip-PARTIAL rect{fill:#b7791f}.chip-EXISTS rect{fill:var(--grn)}
+.el{transition:opacity .2s}
+.dim .el.off{opacity:.16}
+</style><defs>
+<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker></defs>
+<rect x="0" y="0" width="2900" height="1420" class="bg"/>
+<rect x="0" y="50" width="2900" height="160" class="lane lane-author"/>
+<text x="16" y="124.0" class="lanelabel">Author</text>
+<rect x="0" y="210" width="2900" height="290" class="lane lane-ew"/>
+<text x="16" y="341.0" class="lanelabel">EW control plane</text>
+<text x="16" y="361.0" class="lanelabel sub">(Release panel + policy)</text>
+<rect x="0" y="500" width="2900" height="150" class="lane lane-chk"/>
+<text x="16" y="561.0" class="lanelabel">Automated checks</text>
+<text x="16" y="581.0" class="lanelabel sub">(Governance Agent)</text>
+<rect x="0" y="650" width="2900" height="150" class="lane lane-nat"/>
+<text x="16" y="711.0" class="lanelabel">Standard approvals</text>
+<text x="16" y="731.0" class="lanelabel sub">(EW Request Publish)</text>
+<rect x="0" y="800" width="2900" height="200" class="lane lane-wf"/>
+<text x="16" y="886.0" class="lanelabel">Advanced approvals</text>
+<text x="16" y="906.0" class="lanelabel sub">(Workfront)</text>
+<rect x="0" y="1000" width="2900" height="240" class="lane lane-pub"/>
+<text x="16" y="1106.0" class="lanelabel">Publish · Localize · Roll out</text>
+<text x="16" y="1126.0" class="lanelabel sub">(EDS · Translation · MSM)</text>
+<rect x="0" y="1240" width="2900" height="150" class="lane lane-rec"/>
+<text x="16" y="1309.0" class="lanelabel">Record &amp; audit</text>
+<line x1="196" y1="50" x2="196" y2="1390" class="lanesep"/>
+<text x="330" y="32" text-anchor="middle" class="colhead">Start</text>
+<text x="620" y="32" text-anchor="middle" class="colhead">Scope</text>
+<text x="910" y="32" text-anchor="middle" class="colhead">Checks</text>
+<text x="1200" y="32" text-anchor="middle" class="colhead">Route</text>
+<text x="1490" y="32" text-anchor="middle" class="colhead">Review</text>
+<text x="1780" y="32" text-anchor="middle" class="colhead">Gate + Release</text>
+<text x="2070" y="32" text-anchor="middle" class="colhead">Localize</text>
+<text x="2360" y="32" text-anchor="middle" class="colhead">Roll out</text>
+<g class="el" data-t="g l w e"><polyline points="455,130 620,130 620,292" class="edge main" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="g l w e"><polyline points="620,408 620,575 785,575" class="edge main" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="g l w e"><polyline points="950,516 950,350 1065,350" class="edge main" marker-end="url(#ar)"/>
+<text x="958" y="455" text-anchor="start" class="elabel main">pass / warn</text>
+</g>
+<g class="el" data-t="g l w e"><polyline points="870,516 870,180" class="edge warn" marker-end="url(#ar)"/>
+<text x="878" y="300" text-anchor="start" class="elabel warn">block: fix</text>
+</g>
+<g class="el" data-t="g"><polyline points="1200,425 1200,525" class="edge t1" marker-end="url(#ar)"/>
+<text x="1208" y="447" text-anchor="start" class="elabel t1">Tier 1</text>
+</g>
+<g class="el" data-t="g l"><polyline points="1335,350 1350,350 1350,725 1365,725" class="edge nat" marker-end="url(#ar)"/>
+<text x="1342" y="705" text-anchor="end" class="elabel nat">T2 / T3: request</text>
+</g>
+<g class="el" data-t="w"><polyline points="1350,740 1350,905 1365,905" class="edge wf" marker-end="url(#ar)"/>
+<text x="1342" y="885" text-anchor="end" class="elabel wf">Advanced: request</text>
+</g>
+<g class="el" data-t="e"><polyline points="1200,275 1200,188" class="edge em" marker-end="url(#ar)"/>
+<text x="1208" y="262" text-anchor="start" class="elabel em">Emergency</text>
+</g>
+<g class="el" data-t="g l"><polyline points="1615,725 1780,725" class="edge nat" marker-end="url(#ar)"/>
+<text x="1645.0" y="717" text-anchor="start" class="elabel nat">decision</text>
+</g>
+<g class="el" data-t="g"><polyline points="1325,575 1780,575" class="edge t1" marker-end="url(#ar)"/>
+<text x="1385.0" y="567" text-anchor="start" class="elabel t1">auto decision</text>
+</g>
+<g class="el" data-t="w"><polyline points="1615,905 1655,905" class="edge wf" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="w"><polyline points="1780,855 1780,425" class="edge wf" marker-end="url(#ar)"/>
+<text x="1788" y="640" text-anchor="start" class="elabel wf">decision(version)</text>
+</g>
+<g class="el" data-t="g l w"><polyline points="1780,275 1780,188" class="edge warn" marker-end="url(#ar)"/>
+<text x="1788" y="235" text-anchor="start" class="elabel warn">No: edited or rejected</text>
+</g>
+<g class="el" data-t="g l w"><polyline points="1915,350 2070,350 2070,1056" class="edge main" marker-end="url(#ar)"/>
+<text x="1940" y="340" text-anchor="start" class="elabel main">Yes</text>
+</g>
+<g class="el" data-t="e"><polyline points="1325,130 1345,130 1345,198 2150,198 2150,1056" class="edge em" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="g l w e"><polyline points="2195,1115 2225,1115" class="edge main" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="g l w e"><polyline points="2495,1115 2525,1115" class="edge main" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="g l w e"><polyline points="2070,1174 2070,1273" class="edge rec" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="g l w e"><polyline points="2360,1182 2360,1273" class="edge rec" marker-end="url(#ar)"/>
+</g>
+<g class="el" data-t="g l w e"><polyline points="2650,1174 2650,1273" class="edge rec" marker-end="url(#ar)"/>
+</g>
+<g class="el node" data-t="g l w e" id="n-a1">
+<rect x="205" y="72" width="250" height="117" rx="10" class="box box-author"/>
+<text x="217" y="98" class="nt">Author clicks Publish</text>
+<text x="217" y="118" class="nb">Same panel from the editor</text>
+<text x="217" y="134" class="nb">Send button, the file-list</text>
+<text x="217" y="152" class="nb">bulk bar (page or folder</text>
+<text x="217" y="168" class="nb">selection) and the Assistant.</text>
+<g class="chip chip-PARTIAL"><rect x="385" y="62" width="62" height="18" rx="9"/><text x="416" y="76" text-anchor="middle">PARTIAL</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-a2">
+<rect x="785" y="80" width="250" height="100" rx="10" class="box box-author"/>
+<text x="797" y="106" class="nt">Fix flagged items</text>
+<text x="797" y="126" class="nb">Blocking checks return the</text>
+<text x="797" y="143" class="nb">author to the page with inline</text>
+<text x="797" y="160" class="nb">suggestions, then re-run.</text>
+<g class="chip chip-PARTIAL"><rect x="965" y="71" width="62" height="18" rx="9"/><text x="996" y="84" text-anchor="middle">PARTIAL</text></g>
+</g>
+<g class="el node" data-t="e" id="n-em1">
+<rect x="1075" y="72" width="250" height="117" rx="10" class="box box-author"/>
+<text x="1087" y="98" class="nt">Emergency (break-glass)</text>
+<text x="1087" y="118" class="nb">Named publishers only. Skips</text>
+<text x="1087" y="134" class="nb">review; review required</text>
+<text x="1087" y="152" class="nb">afterwards within N hours</text>
+<text x="1087" y="168" class="nb">(native or Workfront).</text>
+<g class="chip chip-BUILD"><rect x="1255" y="62" width="62" height="18" rx="9"/><text x="1286" y="76" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="g l w" id="n-a5">
+<rect x="1655" y="72" width="250" height="117" rx="10" class="box box-author"/>
+<text x="1667" y="98" class="nt">Author revises</text>
+<text x="1667" y="118" class="nb">Changes requested, or page</text>
+<text x="1667" y="134" class="nb">edited after approval.</text>
+<text x="1667" y="152" class="nb">Approval is void; restarts at</text>
+<text x="1667" y="168" class="nb">Checks.</text>
+<g class="chip chip-BUILD"><rect x="1835" y="62" width="62" height="18" rx="9"/><text x="1866" y="76" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-e1">
+<rect x="495" y="292" width="250" height="117" rx="10" class="box box-ew"/>
+<text x="507" y="318" class="nt">0 Scope</text>
+<text x="507" y="338" class="nb">Page or bulk. Split by</text>
+<text x="507" y="354" class="nb">governance zone. Add the</text>
+<text x="507" y="372" class="nb">fragments and assets the pages</text>
+<text x="507" y="388" class="nb">depend on.</text>
+<g class="chip chip-BUILD"><rect x="675" y="282" width="62" height="18" rx="9"/><text x="706" y="296" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-route">
+<polygon points="1200,275.0 1335.0,350 1200,425.0 1065.0,350" class="box dia"/>
+<g class="chip chip-BUILD"><rect x="1169" y="266.0" width="62" height="18" rx="9"/><text x="1200" y="279.0" text-anchor="middle">BUILD</text></g>
+<text x="1200" y="320" text-anchor="middle" class="nt">2 Route</text>
+<text x="1200" y="339" text-anchor="middle" class="nb">Zone + tier + check</text>
+<text x="1200" y="355" text-anchor="middle" class="nb">results choose the</text>
+<text x="1200" y="371" text-anchor="middle" class="nb">approval provider</text>
+</g>
+<g class="el node" data-t="g l w" id="n-e4">
+<rect x="1370" y="273" width="240" height="134" rx="10" class="box box-ew"/>
+<text x="1382" y="299" class="nt">Provider contract</text>
+<text x="1382" y="319" class="nb">request(version, preview URL,</text>
+<text x="1382" y="336" class="nb">policy) out;</text>
+<text x="1382" y="353" class="nb">decision(version, who, when)</text>
+<text x="1382" y="370" class="nb">back; withdraw if the page</text>
+<text x="1382" y="387" class="nb">changes.</text>
+<g class="chip chip-BUILD"><rect x="1540" y="264" width="62" height="18" rx="9"/><text x="1571" y="277" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="g l w" id="n-gate">
+<polygon points="1780,275.0 1915.0,350 1780,425.0 1645.0,350" class="box dia"/>
+<g class="chip chip-BUILD"><rect x="1749" y="266.0" width="62" height="18" rx="9"/><text x="1780" y="279.0" text-anchor="middle">BUILD</text></g>
+<text x="1780" y="328" text-anchor="middle" class="nt">Gate</text>
+<text x="1780" y="347" text-anchor="middle" class="nb">Approved for this exact</text>
+<text x="1780" y="363" text-anchor="middle" class="nb">version?</text>
+</g>
+<g class="el node" data-t="g l w e" id="n-e5">
+<rect x="205" y="362" width="250" height="117" rx="10" class="box box-ew"/>
+<text x="217" y="388" class="nt">Status rail</text>
+<text x="217" y="408" class="nb">Checks › Review › Release ›</text>
+<text x="217" y="424" class="nb">Locales › Rollout, same view</text>
+<text x="217" y="442" class="nb">for author, approver and</text>
+<text x="217" y="458" class="nb">admin.</text>
+<g class="chip chip-BUILD"><rect x="385" y="352" width="62" height="18" rx="9"/><text x="416" y="366" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-k1">
+<rect x="785" y="516" width="250" height="117" rx="10" class="box box-chk"/>
+<text x="797" y="542" class="nt">1 Automated checks</text>
+<text x="797" y="562" class="nb">Brand (Experience Context),</text>
+<text x="797" y="580" class="nb">visibility (ABV), links and</text>
+<text x="797" y="596" class="nb">accessibility. Each is block,</text>
+<text x="797" y="614" class="nb">warn or info. Gate bulk too.</text>
+<g class="chip chip-PARTIAL"><rect x="965" y="508" width="62" height="18" rx="9"/><text x="996" y="520" text-anchor="middle">PARTIAL</text></g>
+</g>
+<g class="el node" data-t="g" id="n-n0">
+<rect x="1075" y="525" width="250" height="100" rx="10" class="box box-chk"/>
+<text x="1087" y="551" class="nt">Tier 1: auto-approve</text>
+<text x="1087" y="571" class="nb">All blocking checks passed in</text>
+<text x="1087" y="588" class="nb">a low-risk zone. No human</text>
+<text x="1087" y="605" class="nb">step; decision recorded.</text>
+<g class="chip chip-BUILD"><rect x="1255" y="516" width="62" height="18" rx="9"/><text x="1286" y="529" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="g l" id="n-n1">
+<rect x="1365" y="666" width="250" height="117" rx="10" class="box box-nat"/>
+<text x="1377" y="692" class="nt">Standard review (T2, T3)</text>
+<text x="1377" y="712" class="nb">Up to 3 stages; parallel</text>
+<text x="1377" y="730" class="nb">groups (all-of / any-of);</text>
+<text x="1377" y="746" class="nb">diff, comments, reminders;</text>
+<text x="1377" y="764" class="nb">four-eyes.</text>
+<g class="chip chip-PARTIAL"><rect x="1545" y="658" width="62" height="18" rx="9"/><text x="1576" y="670" text-anchor="middle">PARTIAL</text></g>
+</g>
+<g class="el node" data-t="w" id="n-w1">
+<rect x="1365" y="837" width="250" height="136" rx="10" class="box box-wf"/>
+<text x="1377" y="863" class="nt">Advanced approvals</text>
+<text x="1377" y="882" class="nt">(Workfront)</text>
+<text x="1377" y="902" class="nb">Past standard limits:</text>
+<text x="1377" y="919" class="nb">conditional routing, SLA and</text>
+<text x="1377" y="936" class="nb">escalation, external</text>
+<text x="1377" y="953" class="nb">reviewers, project tracking.</text>
+<g class="chip chip-BUILD"><rect x="1545" y="828" width="62" height="18" rx="9"/><text x="1576" y="841" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="w" id="n-w2">
+<rect x="1655" y="855" width="250" height="100" rx="10" class="box box-wf"/>
+<text x="1667" y="881" class="nt">Decision returns</text>
+<text x="1667" y="901" class="nb">Event subscription or Fusion</text>
+<text x="1667" y="918" class="nb">webhook sends stage and final</text>
+<text x="1667" y="935" class="nb">decisions back to EW.</text>
+<g class="chip chip-BUILD"><rect x="1835" y="846" width="62" height="18" rx="9"/><text x="1866" y="859" text-anchor="middle">BUILD</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-p1">
+<rect x="1945" y="1056" width="250" height="117" rx="10" class="box box-pub"/>
+<text x="1957" y="1082" class="nt">4 Release</text>
+<text x="1957" y="1102" class="nb">Publish now or scheduled.</text>
+<text x="1957" y="1120" class="nb">Bulk: atomic or partial.</text>
+<text x="1957" y="1136" class="nb">Publishes on EDS only after</text>
+<text x="1957" y="1154" class="nb">the gate opens.</text>
+<g class="chip chip-PARTIAL"><rect x="2125" y="1048" width="62" height="18" rx="9"/><text x="2156" y="1060" text-anchor="middle">PARTIAL</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-t1">
+<rect x="2225" y="1048" width="270" height="134" rx="10" class="box box-pub"/>
+<text x="2237" y="1074" class="nt">5 Localize</text>
+<text x="2237" y="1094" class="nb">Per-locale variants, each with</text>
+<text x="2237" y="1111" class="nb">its own gates. T1/T2: inherit</text>
+<text x="2237" y="1128" class="nb">approval + sampled QA. T3: in-</text>
+<text x="2237" y="1145" class="nb">country review per locale (native</text>
+<text x="2237" y="1162" class="nb">or Workfront stage).</text>
+<g class="chip chip-PARTIAL"><rect x="2425" y="1039" width="62" height="18" rx="9"/><text x="2456" y="1052" text-anchor="middle">PARTIAL</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-m1">
+<rect x="2525" y="1056" width="250" height="117" rx="10" class="box box-pub"/>
+<text x="2537" y="1082" class="nt">6 Roll out (MSM)</text>
+<text x="2537" y="1102" class="nb">Satellites inherit or merge.</text>
+<text x="2537" y="1120" class="nb">Global fields locked, local</text>
+<text x="2537" y="1136" class="nb">fields open. Rollout re-check</text>
+<text x="2537" y="1154" class="nb">by tier.</text>
+<g class="chip chip-PARTIAL"><rect x="2705" y="1048" width="62" height="18" rx="9"/><text x="2736" y="1060" text-anchor="middle">PARTIAL</text></g>
+</g>
+<g class="el node" data-t="g l w e" id="n-r1">
+<rect x="1910" y="1273" width="900" height="84" rx="10" class="box box-rec"/>
+<text x="1922" y="1299" class="nt">7 Record</text>
+<text x="1922" y="1319" class="nb">Publish record: who, what version, which provider decision, when. Expiry or archive, rollback.</text>
+<g class="chip chip-BUILD"><rect x="2740" y="1264" width="62" height="18" rx="9"/><text x="2771" y="1277" text-anchor="middle">BUILD</text></g>
+</g>
+</svg>
