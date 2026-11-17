@@ -34,7 +34,7 @@ h2{margin:0 0 4px;font-size:22px}.lead{color:var(--mut);margin:0 0 14px}
 .row .n{flex:1;min-width:140px}.row small{color:var(--mut);display:block}
 select,input[type=text]{border:1px solid var(--line);border-radius:6px;padding:4px 8px;background:#fff}
 .tog{display:inline-flex;align-items:center;gap:8px}
-.tog input{width:36px;height:20px;appearance:none;background:#bbb;border-radius:10px;position:relative;cursor:pointer;transition:.15s}
+.tog input{flex:none;min-width:36px;width:36px;height:20px;appearance:none;background:#bbb;border-radius:10px;position:relative;cursor:pointer;transition:.15s}
 .tog input:after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.15s}
 .tog input:checked{background:var(--blue)}.tog input:checked:after{left:18px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:16px;overflow:hidden}.seg button{border:0;background:#fff;padding:3px 12px;font-size:13px}.seg button.on{background:var(--blue);color:#fff;font-weight:700}
@@ -62,15 +62,22 @@ code{background:#f1f1f1;border-radius:4px;padding:0 4px;font-size:12px}
 var STEPS=['Discover','Zones and people','Brand and checks','Approvals','Release rules','Languages and sites','Review and apply'];
 var P,cur=0,seen={};
 function reset(){cur=0;seen={0:1};P={
- zones:[{id:'g',name:'Global marketing',paths:'/, /products, /blog',group:'wknd-authors',tier:'T2',appr:'wknd-brand',on:true},
-        {id:'l',name:'Legal-locked',paths:'/legal, /disclosures',group:'wknd-legal-authors',tier:'T3',appr:'wknd-legal + wknd-brand',on:true},
-        {id:'r',name:'Regional',paths:'/fr, /de, /ja',group:'wknd-regional',tier:'T2',appr:'wknd-regional-leads',on:true}],
+ zones:[{id:'g',name:'Global marketing',paths:'/, /products, /blog',group:'wknd-authors',tier:'T2',appr:'wknd-brand',wf:'Brand review',on:true},
+        {id:'l',name:'Legal-locked',paths:'/legal, /disclosures',group:'wknd-legal-authors',tier:'T3',appr:'wknd-legal + wknd-brand',wf:'Legal, then Brand',on:true},
+        {id:'r',name:'Regional',paths:'/fr, /de, /ja',group:'wknd-regional',tier:'T2',appr:'wknd-regional-leads',wf:'Brand review',on:true}],
  checks:[{n:'Brand voice and terminology',src:'Experience Context',sev:'block'},{n:'Links resolve (no 404)',src:'Preflight',sev:'block'},{n:'Claims need a disclosure',src:'Experience Context',sev:'block'},{n:'Accessibility basics',src:'Preflight',sev:'warn'},{n:'AI visibility (ABV)',src:'Custom check',sev:'info'}],
  brandFile:true,activate:true,
  q:{stages:'no',agency:'no',sla:'no',wf:'no'},
- rules:{sched:true,blockDirect:true,early:'named',emergency:true,bulk:'atomic'},
+ rules:{sched:true,blockDirect:true,earlyOn:true,emergency:true,bulk:'atomic'},preset:'standard',reg:{lock:false,fourEyes:false,aiHuman:true,tamper:false,hidden:false,regional:false,retention:12},
+ workflows:[{n:'Brand review',mode:'order',steps:['Brand']},{n:'Legal, then Brand',mode:'order',steps:['Legal (required)','Brand']}],
  locales:['fr','de','ja'],service:'Google Translate',lpol:{T1:'inherit',T2:'inherit',T3:'in-country'},mode:'base-first',
  msm:{lockGlobal:true,sync:'merge'},applied:false,sim:'g'};}
+function applyPreset(k){reset();seen={0:1};P.preset=k;
+ if(k==='regulated'){P.zones.forEach(function(z){z.tier='T3';z.wf='Legal, then Brand'});P.checks.forEach(function(c){c.sev=c.n.indexOf('AI visibility')===0?'warn':'block'});
+  P.rules={sched:true,blockDirect:true,earlyOn:true,emergency:false,bulk:'atomic'};P.reg={lock:true,fourEyes:true,aiHuman:true,tamper:true,hidden:true,regional:true,retention:12};P.lpol={T1:'in-country',T2:'in-country',T3:'in-country'}}
+ if(k==='scratch'){P.zones.forEach(function(z){z.tier='T2'});P.rules.emergency=false}}
+var LOCKED=['lock','fourEyes','aiHuman','tamper'];
+function overrides(){return P.preset==='regulated'?LOCKED.filter(function(k){return !P.reg[k]}):[]}
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
 function chip(t,c){return '<span class="chip '+(c||'')+'">'+t+'</span>'}
@@ -82,8 +89,8 @@ function agent(h){return '<div class="agent"><div class="ic">✦</div><div>'+h+'
 function foot(){return '<div class="foot">'+(cur>0?'<button class="btn" data-a="back">Back</button>':'')+'<span class="sp"></span>'+(cur<6?'<button class="btn p" data-a="next">Continue: '+STEPS[cur+1]+'</button>':'')+'</div>'}
 /* ---------- steps ---------- */
 function s0(){return '<h2>Welcome. Here is what I found</h2><p class="lead">I read the imported site. Nothing is changed until you apply at the end.</p>'+
- agent('<p>I found <b>233 items</b> and a clear structure. I will propose a governance setup based on it: who can do what, what gets checked, who approves, and how languages roll out. You can accept my suggestions or change anything.</p><p>This takes about 5 minutes. Every step shows what I would write and where.</p>')+
- '<div class="grid" style="margin-bottom:12px"><div class="stat"><b>217</b>pages</div><div class="stat"><b>30</b>fragments</div><div class="stat"><b>6</b>sheets</div><div class="stat"><b>0</b>import errors</div></div>'+
+ agent('<p>Pick a starting point below. I found <b>233 items</b> and a clear structure. I will propose a governance setup based on it: who can do what, what gets checked, who approves, and how languages roll out. You can accept my suggestions or change anything.</p><p>This takes about 5 minutes. Every step shows what I would write and where.</p>')+
+ '<div class="card"><h4>Starting point</h4><div class="row"><span class="n">How strict should your setup be?<small>This pre-fills every step. You can still change anything.</small></span>'+seg('preset',[['standard','Standard'],['regulated','Regulated industry'],['scratch','Start from scratch']],P.preset)+'</div>'+(P.preset==='regulated'?'<div class="why"><b>Regulated pre-fills:</b> controlled approval for every zone (no auto-approve), required Legal step, four-eyes, a lock while a page is in review, AI content labeled and always human-approved, a downloadable record kept 12 months, hidden releases, early publish only by named people with a reason, and the emergency path off.</div>':P.preset==='standard'?'<div class="why">Fast, standard and controlled tiers by zone, with the emergency path available.</div>':'<div class="why">Minimal rules. You choose everything.</div>')+'</div><div class="grid" style="margin-bottom:12px"><div class="stat"><b>217</b>pages</div><div class="stat"><b>30</b>fragments</div><div class="stat"><b>6</b>sheets</div><div class="stat"><b>0</b>import errors</div></div>'+
  '<div class="card"><h4>Structure I detected</h4><div class="row"><span class="n"><b>/ , /products, /blog</b><small>134 pages · marketing content</small></span>'+chip('proposed zone','b')+'</div><div class="row"><span class="n"><b>/legal, /disclosures</b><small>12 pages · contains pricing and claims language</small></span>'+chip('proposed zone','b')+'</div><div class="row"><span class="n"><b>/fr, /de, /ja</b><small>71 pages · language folders found</small></span>'+chip('proposed zone','b')+'</div></div>'+
  '<div class="card"><h4>People I can see</h4><div class="row"><span class="n">Admin Console groups: <code>wknd-authors</code> <code>wknd-brand</code> <code>wknd-legal-authors</code> <code>wknd-legal</code> <code>wknd-regional</code> <code>wknd-regional-leads</code></span></div><div class="row"><span class="n">Existing setup: no governance rules found. Request Publish not configured. Translation uses defaults.</span>'+chip('starting from scratch','l')+'</div></div>'+foot()}
 function s1(){var h='<h2>Zones and people</h2><p class="lead">A zone is a part of the site with its own rules. Each zone has authors, and a different rule for approval.</p>'+
@@ -104,18 +111,27 @@ function s3(){var q=P.q,w=rec();
  [['stages','Do any pages need more than 3 approval stages, or a different route depending on the content?'],['agency','Do agencies or reviewers outside your company approve content?'],['sla','Do you need deadlines with escalation or reminders to managers?'],['wf','Do you already run approvals in Workfront?']].map(function(x){return '<div class="row"><span class="n">'+x[1]+'</span>'+seg('q:'+x[0],[['no','No'],['yes','Yes']],q[x[0]])+'</div>'}).join('')+'</div>';
  if(w.length)h+='<div class="rec wf"><b>Recommendation: advanced approvals in Workfront</b> for zones that need it, because of '+w.join(', ')+'.<div class="why">Experience Workspace still owns the gate: it holds the version, checks the decision is for that exact version, publishes and writes the record. Workfront never publishes. I will connect Workfront in the next step of apply and run a test round trip.</div></div>';
  else h+='<div class="rec"><b>Recommendation: standard approvals</b> in Experience Workspace. Up to 3 stages, reviewers in parallel, reminders, and the decision is tied to the exact version.</div>';
- h+='<div class="card"><h4>Tier for each zone</h4>';
- P.zones.forEach(function(z,i){if(!z.on)return;h+='<div class="row"><span class="n"><b>'+esc(z.name)+'</b><small>Approvers: '+esc(z.appr)+'</small></span>'+seg('tier'+i,[['T1','Fast'],['T2','Standard'],['T3','Controlled']],z.tier)+'</div>'});
- h+='<div class="why"><b>Fast</b>: auto-approve if checks pass. <b>Standard</b>: one reviewer. <b>Controlled</b>: Legal and Brand together, then a final approver; edits void approval.</div>'+
+ h+='<div class="card"><h4>Workflows '+chip('your admin defines who is in each step','l')+'</h4>'+P.workflows.map(function(w,k){return '<div class="row"><span class="n"><b>'+esc(w.n)+'</b><small>'+w.steps.map(esc).join(w.mode==='order'?' → ':' + ')+'</small></span>'+seg('wm'+k,[['order','In order'],['together','Together']],w.mode)+'</div>'}).join('')+'<div class="why">Authors pick a workflow when they request review, only from the ones their zone allows. Required steps cannot be skipped.</div></div><div class="card"><h4>Tier and workflow for each zone</h4>';
+ P.zones.forEach(function(z,i){if(!z.on)return;h+='<div class="row"><span class="n"><b>'+esc(z.name)+'</b><small>Approvers: '+esc(z.appr)+'</small></span>'+seg('tier'+i,(P.preset==='regulated'?[['T2','Standard'],['T3','Controlled']]:[['T1','Fast'],['T2','Standard'],['T3','Controlled']]),z.tier)+(z.tier!=='T1'?'<select data-a="sel" data-n="zw'+i+'">'+P.workflows.map(function(w){return '<option'+(w.n===z.wf?' selected':'')+'>'+esc(w.n)+'</option>'}).join('')+'</select>':'')+'</div>'});
+ h+=(P.preset==='regulated'?'<div class="why" style="color:var(--amb)">Fast (auto-approve) is not offered in the Regulated starting point. AI-created content always needs a person.</div>':'')+'<div class="why"><b>Fast</b>: auto-approve if checks pass. <b>Standard</b>: one reviewer. <b>Controlled</b>: Legal and Brand together, then a final approver; edits void approval.</div>'+
  (w.length?'<div class="row"><span class="n">Use Workfront for<br>'+P.zones.filter(function(z){return z.on}).map(function(z,i){return '<label style="margin-right:10px"><input type="checkbox" data-a="wfz" data-n="'+z.id+'" '+(z.wf?'checked':'')+'> '+esc(z.name)+'</label>'}).join('')+'</span></div>':'')+'</div>'+foot();return h}
-function s4(){var r=P.rules;return '<h2>Release rules</h2><p class="lead">How publishing itself is controlled.</p>'+
- agent('<p>I recommend that authors cannot publish directly. Everything goes through the release rail so the rules always apply. For emergencies, a short list of named people can publish early, and every use is reviewed afterwards.</p>')+
- '<div class="card">'+
- '<div class="row"><span class="n">'+tog('blockDirect',r.blockDirect,'Authors cannot publish directly')+'<small>Removes the publish role for authors in Edge Delivery.</small></span></div>'+
+function s4(){var r=P.rules,g=P.reg,lk=function(k){return P.preset==='regulated'&&LOCKED.indexOf(k)>=0},rt=function(k,t,sub){return '<div class="row"><span class="n">'+tog('reg:'+k,g[k],t)+'<small>'+sub+(lk(k)&&!g[k]?' <span style="color:var(--red)"><b>Override: recorded in the profile.</b></span>':lk(k)?' <span style="color:var(--mut)">(set by the Regulated starting point)</span>':'')+'</small></span></div>'};
+ return '<h2>Release rules</h2><p class="lead">How publishing itself is controlled.</p>'+
+ agent('<p>I recommend that authors cannot publish directly, so the release rail always applies. A short list of named people may publish a scheduled release early, with a reason that is recorded.</p>')+
+ '<div class="card"><h4>Publishing</h4>'+
+ '<div class="row"><span class="n">'+tog('blockDirect',r.blockDirect,'Authors cannot publish directly')+'<small>The Send panel shows “Not available” and says who can publish early.</small></span></div>'+
  '<div class="row"><span class="n">'+tog('sched',r.sched,'Allow scheduled publishing')+'</span></div>'+
- '<div class="row"><span class="n">'+tog('emergency',r.emergency,'Emergency path (publish first, review after)')+'<small>Named publishers only. Checks still run. A review is required within 24 hours.</small></span>'+(r.emergency?'<input type="text" value="Morgan T., Dana R." data-a="txt" style="width:170px">':'')+'</div>'+
- '<div class="row"><span class="n">Bulk releases<small>What if one page in a group fails?</small></span>'+seg('bulk',[['atomic','All or nothing'],['partial','Publish the rest']],r.bulk)+'</div></div>'+
- '<div class="card"><h4>Needs product work '+chip('not available yet','a')+'</h4><div class="why">Blocking direct publish uses a role workaround today. The emergency path, named early publishers and all-or-nothing bulk are new capabilities. I save them in the profile and enforce them as they ship.</div></div>'+foot()}
+ '<div class="row"><span class="n">'+tog('earlyOn',r.earlyOn,'Allow named people to publish a scheduled release early')+'<small>A reason is required and recorded. Not a way around review: the release must already be approved.</small></span>'+(r.earlyOn?'<input type="text" value="Morgan T." data-a="txt" style="width:140px">':'')+'</div>'+
+ '<div class="row"><span class="n">'+tog('emergency',r.emergency,'Emergency path (publish first, review after)')+'<small>Skips review for named publishers. Checks still run and a review is required within 24 hours. '+(P.preset==='regulated'?'Off in the Regulated starting point; many regulated buyers treat it as a control gap.':'')+'</small></span></div>'+
+ '<div class="row"><span class="n">Bulk releases<small>All or nothing. Product confirmed a release goes live as one.</small></span>'+chip('all or nothing','l')+'</div></div>'+
+ '<div class="card"><h4>Controls '+chip(P.preset==='regulated'?'Regulated':'optional',P.preset==='regulated'?'a':'l')+'</h4>'+
+ rt('lock','Lock a page while it is in review','Nobody can overwrite it. Without this, an edit voids approval and the author starts again.')+
+ rt('fourEyes','Four-eyes: authors cannot approve their own work','Separation of duties.')+
+ rt('aiHuman','AI-created content is labeled and a person always approves it','The label carries into the publish record. Agents cannot approve or publish.')+
+ rt('tamper','Publish record is read-only and kept '+g.retention+' months','Exportable. Each record shows who asked, who approved each step, and every page version.')+
+ rt('hidden','Hidden releases','Only people with access can see a release exists.')+
+ rt('regional','Regional admins','Each region manages its own reviewers and publishers. Central IT sets the rules.')+'</div>'+
+ '<div class="card"><h4>Needs product work '+chip('not available yet','a')+'</h4><div class="why">Blocking direct publish, the lock, four-eyes, early publish, hidden releases, regional admins and enforcement for publishes from other tools are new capabilities. I save them in the profile and enforce them as they ship.</div></div>'+foot()}
 function s5(){var t=['T1','T2','T3'],h='<h2>Languages and sites</h2><p class="lead">What happens after a page is published.</p>'+
  agent('<p>I found French, German and Japanese folders. I will set up translation and, where a regional site follows the global one, multi-site rollout. Stricter zones get a person in each country to approve before a language goes live.</p>')+
  '<div class="card"><h4>Languages</h4><div class="row"><span class="n">'+['fr','de','ja','es','it','pt'].map(function(l){return '<label style="margin-right:12px"><input type="checkbox" data-a="lang" data-n="'+l+'" '+(P.locales.indexOf(l)>=0?'checked':'')+'> '+l+'</label>'}).join('')+'</span></div><div class="row"><span class="n">Translation service</span><select data-a="sel" data-n="service">'+['Google Translate','Lionbridge','Smartling','Trados'].map(function(s){return '<option'+(s===P.service?' selected':'')+'>'+s+'</option>'}).join('')+'</select></div>'+
@@ -133,11 +149,11 @@ function s6(){var n=P.zones.filter(function(z){return z.on}),h='<h2>Review and a
   ['Organization config → <code>permissions</code> tab',n.length+' rows (paths, groups, write)','Exists','g'],
   ['Experience Context',(P.activate?'Brand, '+P.checks.length+' checks → Active':'Brand and checks → Draft'),'Exists','g'],
   ['Site config → <code>editor.enforcePreflight</code>','true (applies to Publish; not Preview or bulk)','Exists, partial','a'],
-  ['<code>publish-workflow-config</code>','pattern per zone, approvers: '+n.map(function(z){return z.appr}).join('; '),'Exists, partial','a'],
+  ['<code>publish-workflow-config</code>','workflows: '+P.workflows.map(function(w){return w.n}).join('; ')+'; approvers per zone: '+n.map(function(z){return z.appr}).join('; '),'Exists, partial','a'],
   ['Edge Delivery roles','remove publish role from authors'+(P.rules.blockDirect?'':' (skipped)'),'Workaround','a'],
   ['<code>.da/translate</code> sheet','config, languages: '+P.locales.join(', ')+', service: '+P.service+', <code>translate.conflict.behavior</code>='+P.msm.sync,'Exists','g'],
   ['Org config → <code>msm</code> tab + site content provider','base → satellites, '+P.msm.sync,'Exists','g'],
-  ['Governance profile v1','tiers, severity, emergency path, per-tier language review, field locks','New capability','r']];
+  ['Governance profile v1','tiers, workflows, severity, early publish, '+(P.reg.lock?'lock in review, ':'')+(P.reg.fourEyes?'four-eyes, ':'')+(P.reg.tamper?'12-month record, ':'')+'per-tier language review, field locks'+(overrides().length?'. Overrides of the Regulated starting point: '+overrides().join(', '):''),'New capability','r']];
  if(wfOn())w.splice(4,0,['Workfront connection','Fusion webhook + instance via <code>placeholders</code> sheet; approval template; test round trip','Extension exists; return path new','o']);
  h+='<div class="card"><h4>What will be written</h4><table><tr><th>Target</th><th>Change</th><th>Status today</th></tr>'+w.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+chip(r[2],r[3])+'</td></tr>'}).join('')+'</table></div>';
  if(!P.applied)h+='<div class="foot"><button class="btn" data-a="back">Back</button><span class="sp"></span><button class="btn p" data-a="apply">Apply '+w.length+' changes</button></div>';
@@ -145,10 +161,11 @@ function s6(){var n=P.zones.filter(function(z){return z.on}),h='<h2>Review and a
  return h}
 /* ---------- summary ---------- */
 function summary(){var h='<h5>Governance profile (draft)</h5>';
+ h+='<div class="blk"><b>Starting point</b><div>'+({standard:'Standard',regulated:'Regulated industry',scratch:'From scratch'}[P.preset])+'</div>'+(overrides().length?'<div style="color:var(--red)">'+overrides().length+' override(s) recorded</div>':'')+'</div>';
  h+='<div class="blk '+(seen[1]?'new':'')+'"><b>Zones</b>'+P.zones.filter(function(z){return z.on}).map(function(z){return '<div>'+esc(z.name)+' · '+({T1:'Fast',T2:'Standard',T3:'Controlled'}[z.tier])+(z.wf&&wfOn()?' · Workfront':'')+'</div>'}).join('')+'</div>';
  h+='<div class="blk '+(seen[2]?'new':'')+'"><b>Checks</b>'+P.checks.map(function(c){return '<div>'+esc(c.n)+' · '+c.sev+'</div>'}).join('')+'</div>';
  h+='<div class="blk '+(seen[3]?'new':'')+'"><b>Approvals</b><div>'+(wfOn()?'Standard + Workfront for selected zones':'Standard approvals')+'</div></div>';
- h+='<div class="blk '+(seen[4]?'new':'')+'"><b>Release</b><div>Direct publish '+(P.rules.blockDirect?'blocked':'allowed')+'</div><div>Scheduling '+(P.rules.sched?'on':'off')+'</div><div>Emergency path '+(P.rules.emergency?'on':'off')+'</div><div>Bulk: '+(P.rules.bulk==='atomic'?'all or nothing':'partial')+'</div></div>';
+ h+='<div class="blk '+(seen[4]?'new':'')+'"><b>Release</b><div>Direct publish '+(P.rules.blockDirect?'blocked':'allowed')+'</div><div>Scheduling '+(P.rules.sched?'on':'off')+'</div><div>Emergency path '+(P.rules.emergency?'on':'off')+'</div><div>Early publish '+(P.rules.earlyOn?'on (reason required)':'off')+'</div><div>Bulk: all or nothing</div>'+(P.reg.lock?'<div>Lock while in review</div>':'')+(P.reg.fourEyes?'<div>Four-eyes</div>':'')+(P.reg.tamper?'<div>Record kept '+P.reg.retention+' months</div>':'')+'</div>';
  h+='<div class="blk '+(seen[5]?'new':'')+'"><b>Languages and sites</b><div>'+P.locales.join(', ')+' · '+esc(P.service)+'</div><div>Multi-site: '+P.msm.sync+(P.msm.lockGlobal?', global locked':'')+'</div></div>';
  return h}
 /* ---------- render ---------- */
@@ -160,8 +177,8 @@ function render(){
  $('mid').scrollTop=0}
 function go(i){cur=i;seen[i]=1;render()}
 document.addEventListener('change',function(e){var el=e.target,a=el.getAttribute('data-a');if(!a)return;var n=el.getAttribute('data-n');
- if(a==='tog'){if(n.indexOf('zon')===0)P.zones[+n.slice(3)].on=el.checked;else if(n==='lockGlobal')P.msm.lockGlobal=el.checked;else if(n==='activate')P.activate=el.checked;else P.rules[n]=el.checked;keep();return}
- if(a==='sel'){if(n.indexOf('zg')===0)P.zones[+n.slice(2)].group=el.value;else if(n==='service')P.service=el.value;else P[n]=el.value;keep();return}
+ if(a==='tog'){if(n.indexOf('reg:')===0){P.reg[n.slice(4)]=el.checked;keep();return}if(n.indexOf('zon')===0)P.zones[+n.slice(3)].on=el.checked;else if(n==='lockGlobal')P.msm.lockGlobal=el.checked;else if(n==='activate')P.activate=el.checked;else P.rules[n]=el.checked;keep();return}
+ if(a==='sel'){if(n.indexOf('zw')===0){P.zones[+n.slice(2)].wf=el.value;keep();return}if(n.indexOf('zg')===0)P.zones[+n.slice(2)].group=el.value;else if(n==='service')P.service=el.value;else P[n]=el.value;keep();return}
  if(a==='wfz'){P.zones.forEach(function(z){if(z.id===n)z.wf=el.checked});keep();return}
  if(a==='lang'){var i=P.locales.indexOf(n);if(el.checked&&i<0)P.locales.push(n);if(!el.checked&&i>=0)P.locales.splice(i,1);keep();return}});
 function keep(){var y=$('mid').scrollTop;render();$('mid').scrollTop=y}
@@ -173,6 +190,8 @@ document.addEventListener('click',function(e){var el=e.target.closest('[data-a]'
  if(a==='brand'){P.brandFile=!P.brandFile;keep();return}
  if(a==='apply'){P.applied=true;keep();return}
  if(a==='seg'){
+  if(n==='preset'){applyPreset(v);render();return}
+  if(n.indexOf('wm')===0){P.workflows[+n.slice(2)].mode=v;keep();return}
   if(n.indexOf('q:')===0)P.q[n.slice(2)]=v;
   else if(n.indexOf('tier')===0)P.zones[+n.slice(4)].tier=v;
   else if(n.indexOf('lpol')===0)P.lpol[n.slice(4)]=v;
