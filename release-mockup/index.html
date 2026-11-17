@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Governed release mockup</title>
+<style>
+:root{--bg:#f3f3f3;--pan:#fff;--ink:#222;--mut:#6b6b6b;--line:#d9d9d9;--blue:#3b63fb;--blue2:#274dea;--tint:#eef1ff;--grn:#12805c;--gtint:#e7f6ef;--red:#d31510;--rtint:#fdeceb;--amb:#a45f00;--atint:#fff4de;--org:#c45a00;--otint:#fff0e3;--r:8px}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Adobe Clean","Source Sans Pro",-apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+button{font:inherit;cursor:pointer}
+.ctl{background:#2c2c2c;color:#fff;padding:8px 14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:13px}
+.ctl b{opacity:.7;font-weight:600}.ctl .g{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.ctl button{border:1px solid #666;background:#3a3a3a;color:#fff;border-radius:14px;padding:3px 11px;font-size:12.5px}
+.ctl button[aria-pressed=true]{background:#fff;color:#222;border-color:#fff}
+.ctl button.act{background:var(--blue);border-color:var(--blue)}.ctl button:disabled{opacity:.35;cursor:default}
+.hint{background:#fffbe6;border-bottom:1px solid #eadf9e;padding:6px 14px;font-size:13px}
+.app{display:grid;grid-template-rows:44px 1fr;height:calc(100vh - 118px);min-height:560px;background:#fff}
+.top{display:flex;align-items:center;gap:12px;padding:0 14px;border-bottom:1px solid var(--line);background:#fafafa}
+.top .crumb{flex:1;color:var(--mut)}.top .crumb b{color:var(--ink)}
+.send{background:var(--blue);color:#fff;border:0;border-radius:18px;padding:5px 16px;font-weight:700}
+.av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#f6a,#6af);display:grid;place-items:center;color:#fff;font-size:12px;font-weight:700}
+.main{display:grid;grid-template-columns:230px 1fr 350px;min-height:0}
+@media(max-width:1100px){.main{grid-template-columns:1fr 340px}.cow{display:none}}
+.cow{border-right:1px solid var(--line);padding:12px;background:#fafafa;overflow:auto}
+.cow h4{margin:0 0 8px;font-size:13px}.cow .chip2{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:16px;padding:5px 12px;margin:0 0 6px;font-size:13px}
+.cow .chip2.new{border-color:var(--blue);color:var(--blue);font-weight:700}
+.cow .p{color:var(--mut);font-size:12px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:8px;margin-top:12px}
+.canvas{background:#efebe4;overflow:auto;position:relative;padding:18px}
+.page{background:#fff;max-width:640px;margin:0 auto;border-radius:6px;box-shadow:0 1px 3px #0003;overflow:hidden}
+.nav{background:#2d241d;color:#e8d9c4;padding:8px 14px;font-size:12px;letter-spacing:.08em;display:flex;gap:14px}
+.hero{height:110px;background:linear-gradient(120deg,#8aa0b8,#d9d2cc 55%,#c9a37c)}
+.pb{padding:16px 22px}.pb h2{font-family:Georgia,serif;margin:0 0 6px;font-size:24px;color:#6b4423}
+.pb p{margin:8px 0}.flag{outline:3px solid var(--red);background:var(--rtint);border-radius:3px;padding:2px 4px}.flash{animation:fl 1s 2}@keyframes fl{50%{background:#fff}}
+.del{background:var(--rtint);text-decoration:line-through;padding:0 3px}.add{background:var(--gtint);padding:0 3px;outline:1px solid var(--grn)}
+.cmt{display:inline-block;border:1px dashed var(--blue);background:var(--tint);border-radius:8px;padding:3px 9px;font-size:12px;margin-top:6px}
+.banner{position:sticky;top:0;margin:0 auto 10px;max-width:640px;background:#222;color:#fff;border-radius:16px;padding:4px 14px;font-size:12.5px;text-align:center;z-index:2}
+.edtool{max-width:640px;margin:0 auto 8px;display:flex;gap:6px}
+.edtool button{border:1px solid var(--line);background:#fff;border-radius:14px;padding:2px 11px;font-size:12px}
+table.fl{width:100%;max-width:700px;margin:0 auto;background:#fff;border-collapse:collapse;border-radius:6px;overflow:hidden;font-size:13px}
+table.fl th,table.fl td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left}table.fl th{background:#fafafa}
+.bulkbar{max-width:700px;margin:8px auto 0;background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 10px;display:flex;gap:8px;align-items:center;font-size:13px}
+.bulkbar button{border:1px solid var(--line);background:#fff;border-radius:14px;padding:2px 12px}.bulkbar .pub{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:700}
+.rail{border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;background:#fff}
+.tabs{display:flex;gap:2px;padding:6px 8px;border-bottom:1px solid var(--line);overflow:auto;white-space:nowrap}
+.tabs span{padding:3px 10px;border-radius:12px;font-size:12.5px;color:var(--mut)}.tabs .on{background:#222;color:#fff}.tabs .new{color:var(--blue);font-weight:700}
+.rbody{overflow:auto;flex:1}
+.rh{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;gap:6px;align-items:center;flex-wrap:wrap}.rh b{font-size:15px;margin-right:auto}
+.chip{font-size:11px;font-weight:700;border-radius:9px;padding:1px 8px;color:#fff;background:#7a7a7a;white-space:nowrap}
+.chip.g{background:var(--grn)}.chip.r{background:var(--red)}.chip.a{background:var(--amb)}.chip.b{background:var(--blue)}.chip.o{background:var(--org)}.chip.l{background:#eee;color:#444}
+.who{padding:6px 14px;background:var(--tint);border-bottom:1px solid var(--line);font-size:12.5px}
+.st{padding:10px 14px;border-bottom:1px solid var(--line)}.st.cur{background:var(--tint)}
+.st .r1{display:flex;gap:8px;align-items:center}.st .t{font-weight:700;flex:1}
+.dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:11px;flex:none;background:#fff;color:var(--mut)}
+.dot.done{background:var(--grn);border-color:var(--grn);color:#fff}.dot.cur{border-color:var(--blue);color:var(--blue);font-weight:700}.dot.bad{background:var(--red);border-color:var(--red);color:#fff}.dot.na{background:#eee}
+.sub{margin:3px 0 0 28px;color:var(--mut);font-size:12.5px}.in{margin:6px 0 0 28px}
+.rw{display:flex;gap:8px;align-items:center;margin:5px 0 0 28px;font-size:13px}.rw .n{flex:1}
+.btn{border:1px solid var(--line);background:#fff;border-radius:16px;padding:4px 13px;font-size:13px;font-weight:700;margin:6px 6px 0 0}
+.btn.p{background:var(--blue);border-color:var(--blue);color:#fff}.btn.p:hover{background:var(--blue2)}.btn.d{color:var(--red)}
+.note{width:100%;border:1px solid var(--line);border-radius:6px;padding:5px 8px;font:inherit;margin-top:6px}
+.rad{display:flex;gap:12px;margin:2px 0 0}.rad label{font-size:13px}
+.act2{padding:10px 14px;font-size:12.5px;color:var(--mut)}.act2 h5{margin:0 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.act2 div{padding:2px 0;border-top:1px solid #eee}.act2 div b{color:var(--ink);font-weight:600}
+.pop{position:absolute;right:calc(350px + 6px);top:44px;width:300px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 24px #0003;padding:10px;z-index:9}
+.pop .card{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px}.pop .card b{display:block}
+.pop .card.gov{border-color:var(--blue);background:var(--tint)}
+.pill{display:inline-block;font-size:10.5px;font-weight:700;border-radius:8px;padding:0 6px;margin-left:6px;background:#ddd;color:#444}.pill.gov{background:var(--blue);color:#fff}
+</style></head><body>
+<div class="ctl" id="ctl"></div>
+<div class="hint" id="hint"></div>
+<div class="app">
+ <div class="top"><span>☰</span><span class="crumb" id="crumb"></span><span>Feedback</span><span>…</span><button class="send" id="send">Send ▾</button><span class="av">A</span></div>
+ <div class="main"><div class="cow" id="cow"></div><div class="canvas" id="canvas"></div><div class="rail" id="rail"></div></div>
+</div>
+<script>
+'use strict';
+var PEOPLE={};
+var SCN={
+ g:{k:'g',label:'Global brand (Tier 2)',zone:'Global marketing',tier:'Tier 2',crumb:'wknd › Blog › Plan a winter trip',
+  pages:[{p:'/blog/winter-trip',t:'Plan a winter trip',z:'Global marketing'}],
+  title:'Plan a winter trip',body:['Plan a snow-season escape with routes we love.','Book by '],old:'December 1',nw:'December 15',cmt:'Is the date confirmed? — Alex',
+  fail:{msg:'Link returns 404',fix:'Update link to /guides/winter',anchor:'Read our winter packing guide'},
+  prov:'native',stages:[{n:'Brand review',rule:'any of Brand group',rows:[{id:'priya',w:'Priya N.',r:'Brand'}]}],
+  loc:['Français','Deutsch','日本語'],lp:'inherit',roll:['EU site','APAC site']},
+ f:{k:'f',label:'Fast lane (Tier 1)',zone:'Global marketing',tier:'Tier 1',crumb:'wknd › Blog › Team update',
+  pages:[{p:'/blog/team-update',t:'Team update',z:'Global marketing'}],title:'Team update',body:['Meet the crew behind this season’s routes.','Office hours: '],old:'9 to 5',nw:'9 to 6',cmt:'',
+  fail:null,prov:'none',stages:[],loc:['Français'],lp:'inherit',roll:['EU site']},
+ l:{k:'l',label:'Legal-locked (Tier 3)',zone:'Legal-locked',tier:'Tier 3',crumb:'wknd › Legal › Disclosures',
+  pages:[{p:'/legal/disclosures',t:'Disclosures',z:'Legal-locked'}],title:'Disclosures',body:['Fares and routes are subject to availability.','Cancellation window: '],old:'24 hours',nw:'48 hours',cmt:'Legal wording matches policy 12. — Alex',
+  fail:{msg:'Claim “guaranteed lowest price” has no disclosure',fix:'Add disclosure footnote',anchor:'Guaranteed lowest price'},
+  prov:'native',stages:[{n:'Legal and Brand',rule:'all of, in parallel',rows:[{id:'dana',w:'Dana R.',r:'Legal'},{id:'priya',w:'Priya N.',r:'Brand'}]},{n:'Final approval',rule:'one approver',rows:[{id:'morgan',w:'Morgan T.',r:'Head of Compliance'}]}],
+  loc:['Français','Deutsch'],lp:'in-country',locRev:{'Français':{id:'camille',w:'Camille B.'},'Deutsch':{id:'jonas',w:'Jonas K.'}},roll:['EU site (locked fields)']},
+ w:{k:'w',label:'Advanced: Workfront',zone:'Campaigns',tier:'Advanced approvals',crumb:'wknd › Campaigns › Summer pass',
+  pages:[{p:'/campaigns/summer-pass',t:'Summer pass',z:'Campaigns'}],title:'Summer pass',body:['One pass for every route this summer.','Price: '],old:'$199',nw:'$179',cmt:'',
+  fail:null,prov:'wf',stages:[{n:'Creative',rule:'Workfront stage 1',rows:[{id:'c1',w:'Creative lead',r:'Creative'}]},{n:'Legal (agency)',rule:'Workfront stage 2',rows:[{id:'c2',w:'Agency counsel',r:'External legal'}]},{n:'Final',rule:'Workfront stage 3',rows:[{id:'c3',w:'Brand director',r:'Brand'}]}],
+  loc:['Français','Deutsch','日本語'],lp:'inherit',roll:['EU site','APAC site']},
+ b:{k:'b',label:'Bulk release (mixed zones)',zone:'2 zones',tier:'Mixed tiers',crumb:'wknd › Pages',bulk:true,
+  pages:[{p:'/blog/winter-trip',t:'Plan a winter trip',z:'Global marketing'},{p:'/blog/ski-guide',t:'Ski guide',z:'Global marketing'},{p:'/products/rail-pass',t:'Rail pass',z:'Global marketing'},{p:'/legal/terms',t:'Terms',z:'Legal-locked'}],
+  title:'Terms',body:['By booking you agree to these terms.','Refund window: '],old:'14 days',nw:'30 days',cmt:'',
+  fail:{msg:'Link returns 404 on /legal/terms',fix:'Update link to /legal/refunds',anchor:'Refund policy'},
+  prov:'native',stages:[{n:'Review by zone',rule:'in parallel',rows:[{id:'priya',w:'Priya N.',r:'Brand · 3 Global pages'},{id:'dana',w:'Dana R.',r:'Legal · /legal/terms'}]}],
+  loc:['Français','Deutsch'],lp:'inherit',roll:['EU site']}
+};
+var S;
+function init(k){S={k:k,sc:SCN[k],role:'alex',open:false,pop:false,diff:false,flash:false,fixed:!SCN[k].fail,
+ rv:'idle',ap:{},changes:'',rel:'pending',mode:'now',loc:[],roll:[],t:0,log:[],hint:''};
+ if(!S.sc.fail)S.fixed=true;
+ S.sc.loc.forEach(function(){S.loc.push('queued')});S.sc.roll.forEach(function(){S.roll.push('queued')});
+ L('Alex','Opened '+(S.sc.bulk?S.sc.pages.length+' pages':'page')+' for editing')}
+function ts(){var m=S.t++;return 'Dec 1, 8:'+('0'+(10+m*3)%60).slice(-2)}
+function L(who,what){S.log.push({t:ts(),w:who,a:what})}
+function stageDone(i){return S.sc.stages[i].rows.every(function(r){return S.ap[r.id+i]})}
+function activeStage(){for(var i=0;i<S.sc.stages.length;i++)if(!stageDone(i))return i;return -1}
+function revStatus(){if(!S.sc.stages.length)return 'na';return S.rv==='approved'?'done':'open'}
+function stepState(){
+ var c=S.fixed?'done':'bad',r=revStatus(),rr;
+ if(c!=='done')rr='todo';else if(r==='na')rr='na';else if(r==='done')rr='done';else rr='cur';
+ var rel=S.rel==='live'?'done':((c==='done'&&(r==='na'||r==='done'))?'cur':'todo');
+ var lo='todo';if(S.rel==='live'){lo=S.loc.every(function(x){return x==='published'})?'done':'cur'}
+ var ro='todo';if(lo==='done'){ro=S.roll.every(function(x){return x==='done'})?'done':'cur'}
+ var rec=(ro==='done')?'done':'todo';
+ return {checks:c,review:rr,release:rel,loc:lo,roll:ro,rec:rec}}
+function chip(t,c){return '<span class="chip '+(c||'')+'">'+t+'</span>'}
+function dot(s,n){return '<span class="dot '+({done:'done',cur:'cur',bad:'bad',na:'na',todo:''}[s])+'">'+({done:'✓',bad:'!',na:'–'}[s]||n)+'</span>'}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function roles(){var r=[{id:'alex',n:'Alex (author)'}],seen={};
+ S.sc.stages.forEach(function(st){st.rows.forEach(function(x){if(!seen[x.id]&&S.sc.prov==='native'){seen[x.id]=1;r.push({id:x.id,n:x.w+' ('+x.r.split(' ·')[0]+')'})}})});
+ if(S.sc.locRev)Object.keys(S.sc.locRev).forEach(function(k){var x=S.sc.locRev[k];r.push({id:x.id,n:x.w+' ('+k+' reviewer)'})});return r}
+function pendingFor(id){var a=activeStage();if(S.rv!=='sent'||a<0||S.sc.prov!=='native')return null;
+ var row=S.sc.stages[a].rows.filter(function(x){return x.id===id&&!S.ap[x.id+a]})[0];return row?{a:a,row:row}:null}
+function locPending(id){var out=[];if(!S.sc.locRev)return out;S.sc.loc.forEach(function(l,i){if(S.loc[i]==='review'&&S.sc.locRev[l].id===id)out.push(i)});return out}
+/* ---------- render ---------- */
+function render(){
+ var sc=S.sc;
+ // controls
+ var h='<b>Scenario</b><span class="g">';
+ Object.keys(SCN).forEach(function(k){h+='<button data-a="scn" data-v="'+k+'" aria-pressed="'+(S.k===k)+'">'+SCN[k].label+'</button>'});
+ h+='</span><b>View as</b><span class="g">';
+ roles().forEach(function(r){h+='<button data-a="role" data-v="'+r.id+'" aria-pressed="'+(S.role===r.id)+'">'+r.n+'</button>'});
+ h+='</span><span class="g"><b>Mockup controls</b>';
+ var adv=nextAdv();h+='<button class="act" data-a="adv" '+(adv?'':'disabled')+'>'+(adv||'Nothing to advance')+'</button>';
+ if(sc.prov==='wf'&&S.rv==='sent'&&activeStage()>=0)h+='<button class="act" data-a="wfdec">Workfront returns approval: '+esc(sc.stages[activeStage()].n)+'</button>';
+ h+='<button data-a="reset">Reset</button></span>';
+ document.getElementById('ctl').innerHTML=h;
+ var hints={g:'Try: Send ▾ → Publish… → fix the broken link → Send for review → switch to Priya → Approve → back to Alex → Publish → Advance.',f:'Tier 1: checks pass, no human review is required. Compare with the Global scenario.',l:'Try: fix the claim → Send for review → approve as Dana and Priya → Morgan → schedule → Advance until locales need in-country review (Camille, Jonas).',w:'Policy routes this zone to Workfront. Use “Workfront returns approval” to simulate each stage; the rail shows it and the gate stays in Experience Workspace.',b:'Select the file list → Publish…. Pages are grouped by zone; each zone has its own approver. Edit after approval to see approvals void.'};
+ document.getElementById('hint').textContent=hints[S.k];
+ document.getElementById('crumb').innerHTML=sc.bulk?'<b>wknd</b> › Pages':'<b>'+esc(sc.crumb)+'</b>';
+ document.getElementById('send').textContent=sc.bulk?'Publish…':'Send ▾';
+ // coworker
+ document.getElementById('cow').innerHTML='<h4>Coworker</h4><button class="chip2" data-a="open">AI Visibility Audit</button><button class="chip2" data-a="open">Summarize page</button><button class="chip2 new" data-a="open">Publish workflow ›</button><div class="p">Door 3: the “Publish workflow” chip opens the same Release rail. Doors 1 and 2 are Send and the file-list Publish… button.</div>';
+ // canvas
+ document.getElementById('canvas').innerHTML=canvas();
+ // rail
+ document.getElementById('rail').innerHTML=railHtml();
+ // popover
+ var pp=document.getElementById('pop');if(pp)pp.remove();
+ if(S.pop){var d=document.createElement('div');d.id='pop';d.className='pop';d.innerHTML='<div class="card"><b>Preview'+'<span class="pill">Ungoverned</span></b><span style="color:var(--mut);font-size:12.5px">Last updated just now · main--wknd--org.aem.page</span></div><div class="card gov"><b>Publish…<span class="pill gov">Governed</span></b><span style="color:var(--mut);font-size:12.5px">Checks, review and release follow your zone’s rules.</span><br><button class="btn p" data-a="open">Open Release panel</button></div>';document.querySelector('.app').appendChild(d)}
+}
+function canvas(){var sc=S.sc,h='';
+ var viewDiff=S.diff||(S.role!=='alex'&&!locPendingAny());
+ if(sc.bulk&&!(S.role!=='alex')){
+  h+='<table class="fl"><tr><th></th><th>Name</th><th>Zone</th><th>Status</th></tr>';
+  sc.pages.forEach(function(p,i){var st=S.rel==='live'?chip('Published','g'):(i===3&&!S.fixed&&S.open?chip('Check failed','r'):(S.open?chip('In release','b'):chip('Draft','l')));
+   h+='<tr><td><input type="checkbox" checked disabled></td><td>'+esc(p.p)+'</td><td>'+esc(p.z)+'</td><td>'+st+'</td></tr>'});
+  h+='</table>';
+  if(!S.open)h+='<div class="bulkbar"><b>4 selected</b><button class="pub" data-a="open">Publish…</button><button>Ask Coworker</button><button>Copy</button><button>Cut</button><button>Delete</button></div>';
+  if(S.open&&S.rv!=='idle'&&S.rel!=='live')h+='<div class="edtool" style="margin-top:10px"><button data-a="edit">Make an edit to a page</button></div>';
+  return h}
+ if(S.role!=='alex'&&locPendingAny()){h+='<div class="banner">Reviewing translated page · side by side</div>'}
+ else if(viewDiff)h+='<div class="banner">Diff against live · '+(sc.bulk?'/legal/terms (1 of 4)':'live ← preview')+(sc.cmt?' · 1 comment':'')+'</div>';
+ else if(S.rv!=='idle'&&S.rel!=='live'&&S.open)h+='<div class="edtool"><button data-a="edit">Make an edit to this page</button></div>';
+ var flagged=!S.fixed&&S.open;
+ var anchor=sc.fail?sc.fail.anchor:'';
+ h+='<div class="page"><div class="nav"><span>WKND</span><span>TRIPS</span><span>EVENTS</span><span>EXTRAS</span></div><div class="hero"></div><div class="pb"><h2>'+esc(sc.title)+'</h2><p>'+esc(sc.body[0])+'</p>';
+ h+='<p>'+esc(sc.body[1])+(viewDiff?'<span class="del">'+esc(sc.old)+'</span> <span class="add">'+esc(sc.nw)+'</span>':esc(S.edited?sc.nw:sc.nw))+'</p>';
+ if(anchor)h+='<p>See: <span class="'+(flagged?'flag'+(S.flash?' flash':''):'')+'">'+esc(S.fixed&&sc.fail?anchor+' ✓':anchor)+'</span></p>';
+ if(viewDiff&&sc.cmt)h+='<span class="cmt">💬 '+esc(sc.cmt)+'</span>';
+ if(S.changes)h+='<p><span class="cmt">💬 '+esc(S.changes)+'</span></p>';
+ h+='</div></div>';return h}
+function locPendingAny(){return locPending(S.role).length>0}
+function railHtml(){var sc=S.sc,h='';
+ h+='<div class="tabs"><span>Outline</span><span>Page</span><span>Versions</span><span>Preflight</span><span class="'+(S.open?'on':'new')+'">Release</span><span>Comments</span></div><div class="rbody">';
+ if(!S.open){h+='<div class="act2"><h5>Panels today</h5>The right rail lists 19 panels. Nine relate to publishing. With this proposal, <b>Release</b> replaces Preflight, Request Publish, Snapshots, Rollout and the others.<br><br><button class="btn p" data-a="open">Open Release panel</button></div>';return h+'</div>'}
+ var st=stepState(),role=S.role;
+ h+='<div class="rh"><b>Release</b>'+chip(sc.bulk?sc.pages.length+' pages':'1 page','l')+chip(sc.zone+' · '+sc.tier,sc.prov==='wf'?'o':'a')+'</div>';
+ if(role!=='alex'){var nm=(roles().filter(function(r){return r.id===role})[0]||{}).n;h+='<div class="who">Viewing as '+esc(nm)+'</div>'}
+ var cur=null;['checks','review','release','loc','roll','rec'].some(function(k){if(st[k]!=='done'&&st[k]!=='na'){cur=k;return true}});
+ function cls(k){return 'st'+(cur===k?' cur':'')}
+ // approver / locale reviewer mode
+ var pend=pendingFor(role),lp=locPending(role);
+ if(role!=='alex'){
+  if(pend){h+='<div class="'+cls('review')+'">'+'<div class="r1">'+dot('cur',2)+'<span class="t">Your review</span>'+chip('waiting on you','b')+'</div><div class="sub">Requested by Alex · '+esc(S.note||'No note')+'. Scope: '+esc(pend.row.r)+'</div>'+
+   '<div class="sub">Stage: '+esc(sc.stages[pend.a].n)+' ('+esc(sc.stages[pend.a].rule)+')</div><div class="in"><textarea class="note" id="cm" rows="2" placeholder="Comment (required to request changes)"></textarea><br><button class="btn p" data-a="approve">Approve</button><button class="btn d" data-a="reject">Request changes</button></div><div class="sub">Your decision applies to this exact version. The author cannot approve their own request.</div></div>'}
+  else if(lp.length){lp.forEach(function(i){h+='<div class="st cur"><div class="r1">'+dot('cur','↻')+'<span class="t">Review: '+esc(sc.loc[i])+'</span>'+chip('waiting on you','b')+'</div><div class="sub">In-country review is required for the Legal-locked zone before this locale publishes.</div><div class="in"><button class="btn p" data-a="locok" data-v="'+i+'">Approve '+esc(sc.loc[i])+'</button></div></div>'})}
+  else h+='<div class="st"><div class="r1">'+dot('na','–')+'<span class="t">Nothing waiting on you</span></div><div class="sub">Status below is read-only for reviewers.</div></div>'}
+ // steps
+ h+=stepsHtml(st,cls,role);
+ // activity
+ h+='<div class="act2"><h5>Activity and record</h5>';S.log.slice(-6).reverse().forEach(function(e){h+='<div>'+e.t+' · <b>'+esc(e.w)+'</b> '+esc(e.a)+'</div>'});h+='</div>';
+ return h+'</div>'}
+function stepsHtml(st,cls,role){var sc=S.sc,h='',au=role==='alex';
+ // 1 checks
+ h+='<div class="'+cls('checks')+'"><div class="r1">'+dot(st.checks,1)+'<span class="t">Checks</span>'+(st.checks==='done'?chip('passed','g'):chip('1 blocks','r'))+'</div>';
+ if(st.checks==='bad'){h+='<div class="sub">'+esc(sc.fail.msg)+'. 9 other checks passed.</div>'+(au?'<div class="in"><button class="btn" data-a="show">Show on page</button><button class="btn p" data-a="fix">'+esc(sc.fail.fix)+'</button></div>':'')}
+ else h+='<div class="sub">'+(sc.fail?'Fixed and re-run: 10 of 10 passed.':'10 of 10 passed (brand, links, accessibility).')+'</div>';
+ h+='</div>';
+ // 2 review
+ h+='<div class="'+cls('review')+'"><div class="r1">'+dot(st.review,2)+'<span class="t">Review</span>'+(sc.prov==='wf'?chip('Workfront','o'):'')+(st.review==='na'?chip('not required','l'):st.review==='done'?chip('approved','g'):S.rv==='sent'?chip('in progress','b'):S.rv==='changes'?chip('changes requested','r'):'')+'</div>';
+ if(st.review==='na')h+='<div class="sub">Why: '+esc(sc.tier)+' in '+esc(sc.zone)+' auto-approves when checks pass.</div>';
+ else{
+  h+='<div class="sub">Why: '+esc(sc.zone)+' requires '+(sc.prov==='wf'?'advanced approvals (policy for this zone).':sc.stages.length+' stage'+(sc.stages.length>1?'s':'')+'.')+'</div>';
+  sc.stages.forEach(function(s,i){var a=activeStage(),state=S.rv==='idle'||S.rv==='changes'?'queued':(stageDone(i)?'done':(i===a?'active':'queued'));
+   h+='<div class="rw"><span class="n"><b>'+(sc.stages.length>1?'Stage '+(i+1)+': ':'')+esc(s.n)+'</b> <span style="color:var(--mut)">('+esc(s.rule)+')</span></span></div>';
+   s.rows.forEach(function(x){var ok=S.ap[x.id+i];h+='<div class="rw" style="margin-left:40px"><span class="n">'+esc(x.w)+' · '+esc(x.r)+'</span>'+(ok?chip('approved','g'):state==='active'?chip(sc.prov==='wf'?'in Workfront':'waiting','b'):chip('queued','l'))+'</div>'})});
+  if(S.rv==='changes')h+='<div class="sub" style="color:var(--red)">Changes requested: “'+esc(S.changes)+'”. Edit the page, then send again.</div>';
+  if(au&&(S.rv==='idle'||S.rv==='changes')&&st.review==='cur'){
+   h+='<div class="in">'+(S.rv==='idle'?'<textarea class="note" id="nt" rows="2" placeholder="Note to reviewer (optional)"></textarea><br>':'')+(S.rv==='changes'?'<button class="btn" data-a="edit">Make the edit</button>':'<button class="btn p" data-a="send">'+(sc.prov==='wf'?'Send to Workfront':'Send for review')+'</button>')+'<button class="btn" data-a="diff">'+(S.diff?'Hide diff':'Compare with live')+'</button></div>'}
+  if(au&&S.rv==='sent')h+='<div class="in"><button class="btn" data-a="diff">'+(S.diff?'Hide diff':'Compare with live')+'</button>'+(sc.prov==='wf'?'<button class="btn">Open in Workfront ↗</button>':'<button class="btn">Remind</button>')+'<button class="btn d" data-a="withdraw">Withdraw</button></div><div class="sub">Approval is bound to this version. Editing the page voids it.</div>';
+  if(S.rv==='approved'&&S.rel!=='live'&&au)h+='<div class="sub">Approved version is locked. Editing voids this approval.</div>'}
+ h+='</div>';
+ // 3 release
+ h+='<div class="'+cls('release')+'"><div class="r1">'+dot(st.release,3)+'<span class="t">Release</span>'+(S.rel==='live'?chip('live','g'):S.rel==='scheduled'?chip('scheduled','b'):'')+'</div>';
+ if(S.rel==='live')h+='<div class="sub">Published '+esc(S.liveAt)+'.</div>';
+ else if(S.rel==='scheduled')h+='<div class="sub">Goes live Dec 1, 9:00. Approved version is locked.</div>';
+ else if(st.release==='cur'&&au)h+='<div class="in"><div class="rad"><label><input type="radio" name="md" value="now" '+(S.mode==='now'?'checked':'')+' data-a="mode"> Now</label><label><input type="radio" name="md" value="sched" '+(S.mode==='sched'?'checked':'')+' data-a="mode"> Schedule Dec 1, 9:00</label></div><button class="btn p" data-a="release">'+(S.mode==='now'?'Publish now':'Schedule publish')+'</button></div>';
+ else h+='<div class="sub">'+(st.release==='todo'?'Opens when checks pass and review is done.':'Waiting for the author.')+'</div>';
+ h+='</div>';
+ // 4 languages
+ h+='<div class="'+cls('loc')+'"><div class="r1">'+dot(st.loc,4)+'<span class="t">Languages</span>'+(st.loc==='done'?chip('all published','g'):'')+'</div>';
+ if(S.rel!=='live')h+='<div class="sub">After publish: '+sc.loc.length+' locales. '+(sc.lp==='in-country'?'In-country review before each locale publishes.':'Inherits approval, sampled quality check.')+'</div>';
+ else{sc.loc.forEach(function(l,i){var v=S.loc[i];h+='<div class="rw"><span class="n">'+esc(l)+(sc.locRev&&v==='review'?' <span style="color:var(--mut)">· '+esc(sc.locRev[l].w)+'</span>':'')+'</span>'+(v==='published'?chip('published','g'):v==='review'?chip('in-country review','a'):v==='translating'?chip('translating','b'):chip('queued','l'))+'</div>'});h+='<div class="in"><button class="btn">Open translation project ↗</button></div>'}
+ h+='</div>';
+ // 5 rollout
+ h+='<div class="'+cls('roll')+'"><div class="r1">'+dot(st.roll,5)+'<span class="t">Rollout</span>'+(st.roll==='done'?chip('done','g'):'')+'</div>';
+ if(st.loc!=='done')h+='<div class="sub">After languages: '+sc.roll.join(', ')+' (merge, global fields locked).</div>';
+ else sc.roll.forEach(function(r,i){h+='<div class="rw"><span class="n">'+esc(r)+'</span>'+(S.roll[i]==='done'?chip('synced','g'):S.roll[i]==='syncing'?chip('syncing','b'):chip('queued','l'))+'</div>'});
+ h+='</div>';
+ // 6 record
+ h+='<div class="'+cls('rec')+'"><div class="r1">'+dot(st.rec,6)+'<span class="t">Record</span>'+(st.rec==='done'?chip('written','g'):'')+'</div><div class="sub">'+(st.rec==='done'?'Publish record saved: who, what version, checks, approvals, locales, rollout.':'Written when all steps finish.')+'</div></div>';
+ return h}
+/* ---------- actions ---------- */
+function nextAdv(){
+ if(S.rel==='scheduled')return 'Advance: reach Dec 1, 9:00 (go live)';
+ if(S.rel==='live'){
+  var tr=S.loc.some(function(x){return x==='translating'});if(tr)return 'Advance: translations finish';
+  if(S.loc.every(function(x){return x==='published'})&&S.roll.some(function(x){return x==='queued'}))return 'Advance: start rollout';
+  if(S.roll.some(function(x){return x==='syncing'}))return 'Advance: rollout completes'}
+ return ''}
+function advance(){
+ if(S.rel==='scheduled'){goLive();return}
+ if(S.rel==='live'){
+  if(S.loc.some(function(x){return x==='translating'})){S.loc=S.loc.map(function(x){return x==='translating'?(S.sc.lp==='in-country'?'review':'published'):x});L('System','Translation done'+(S.sc.lp==='in-country'?'; in-country review needed':'; sampled QA passed, locales published'));return}
+  if(S.loc.every(function(x){return x==='published'})&&S.roll.some(function(x){return x==='queued'})){S.roll=S.roll.map(function(){return 'syncing'});L('System','Rollout started to '+S.sc.roll.join(', '));return}
+  if(S.roll.some(function(x){return x==='syncing'})){S.roll=S.roll.map(function(){return 'done'});L('System','Rollout complete. Publish record written');return}}}
+function goLive(){S.rel='live';S.liveAt='Dec 1, 9:00';S.loc=S.loc.map(function(){return 'translating'});L('EW','Published live (version bound to approval)')}
+function voidAll(why){S.ap={};if(S.rv!=='idle'){S.rv='idle';L('EW','Approval voided: '+why)}S.rel==='scheduled'&&(S.rel='pending')}
+document.addEventListener('click',function(e){var el=e.target.closest('[data-a]');var pop=document.getElementById('pop');
+ if(!el){if(S.pop&&!e.target.closest('#pop')){S.pop=false;render()}return}
+ var a=el.getAttribute('data-a'),v=el.getAttribute('data-v');
+ if(a==='mode'){S.mode=el.value;render();return}
+ if(a==='scn'){init(v);render();return}
+ if(a==='reset'){init(S.k);render();return}
+ if(a==='role'){S.role=v;S.pop=false;render();return}
+ if(a==='open'){S.open=true;S.pop=false;L('Alex','Opened Release panel');render();return}
+ if(a==='adv'){advance();render();return}
+ if(a==='wfdec'){var i=activeStage();S.sc.stages[i].rows.forEach(function(r){S.ap[r.id+i]=1});L('Workfront',S.sc.stages[i].n+' approved (stage decision returned for this version)');if(activeStage()<0){S.rv='approved';L('EW','All stages approved. Gate open for this version')}render();return}
+ if(a==='show'){S.flash=true;render();S.flash=false;return}
+ if(a==='fix'){S.fixed=true;L('Alex','Applied: '+S.sc.fail.fix+'. Checks re-run, all passed');render();return}
+ if(a==='send'){var nt=document.getElementById('nt');S.note=nt?nt.value:'';S.rv='sent';var m=S.sc.prov==='wf'?'Sent to Workfront (campaign approval template)':'Sent for review to '+S.sc.stages[0].rows.map(function(r){return r.w}).join(', ');L('Alex',m);render();return}
+ if(a==='withdraw'){S.rv='idle';S.ap={};L('Alex','Withdrew review request');render();return}
+ if(a==='diff'){S.diff=!S.diff;render();return}
+ if(a==='edit'){S.changes='';S.diff=false;voidAll('page edited');L('Alex','Edited the page');render();return}
+ if(a==='approve'){var p=pendingFor(S.role);if(p){S.ap[p.row.id+p.a]=1;L(p.row.w,'Approved ('+p.row.r+')');if(activeStage()<0){S.rv='approved';L('EW','All stages approved. Gate open for this version')}else if(stageDone(p.a))L('EW','Stage '+(p.a+1)+' complete; stage '+(p.a+2)+' requested')}render();return}
+ if(a==='reject'){var cm=document.getElementById('cm');var txt=cm&&cm.value.trim();if(!txt){cm.focus();cm.style.borderColor='var(--red)';return}var p2=pendingFor(S.role);S.rv='changes';S.ap={};S.changes=txt;L(p2.row.w,'Requested changes: '+txt);S.role='alex';render();return}
+ if(a==='release'){S.mode==='now'?goLive():(S.rel='scheduled',L('Alex','Scheduled publish for Dec 1, 9:00'));render();return}
+ if(a==='locok'){var i2=+v;S.loc[i2]='published';L(S.sc.locRev[S.sc.loc[i2]].w,'Approved '+S.sc.loc[i2]+' (in-country)');render();return}
+});
+document.getElementById('send').addEventListener('click',function(e){e.stopPropagation();if(S.sc.bulk){S.open=true;render();return}S.pop=!S.pop;render()});
+init('g');render();
+</script></body></html>
